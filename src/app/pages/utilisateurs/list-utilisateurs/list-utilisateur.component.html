@@ -1,0 +1,241 @@
+<!-- start page title -->
+<app-pagetitle title="Liste des utilisateurs" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<!-- end page title -->
+
+<div class="row">
+  <div class="col-12">
+    <div class="">
+      <div class="">
+        <div class="d-flex justify-content-between">
+          <div class="" [formGroup]="searchForm">
+            <label class="d-inline-flex align-items-center" for="">Recherche:</label>
+            <input type="text" formControlName="search" (change)="loadUsers()" name="searchTerm"
+              class="form-control form-control-sm" aria-controls="tickets-table">
+          </div>
+          <div class="d-flex justify-content-end gap-1 mb-4">
+            <div class="">
+              <button (click)="openModal(content, null, 'add')" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Utilisateur</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle datatable dt-responsive table-check nowrap"
+            style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
+            <thead>
+              <tr class="bg-transparent">
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Adresse</th>
+                <th>Role</th>
+                <th>Statut</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (table of users; track $index) {
+              <tr>
+                <td class="text-body">
+                  <ngb-highlight [result]="table.firstName" [term]="searchTerm">
+                  </ngb-highlight>
+                </td>
+                <td>
+                  <ngb-highlight [result]="table.lastName" [term]="searchTerm"></ngb-highlight>
+                </td>
+                <td>
+                  <ngb-highlight [result]="table.email" [term]="searchTerm">
+                  </ngb-highlight>
+                </td>
+                <td>
+                  <ngb-highlight [result]="table.telephone" [term]="searchTerm"></ngb-highlight>
+                </td>
+                <td>
+                  <ngb-highlight [result]="table.adresse" [term]="searchTerm"></ngb-highlight>
+                </td>
+                <td>
+                  {{table.role}}
+                </td>
+                <td>
+                  <span *ngIf="table.enabled" class="badge badge-soft-success font-size-12">Actif</span>
+                  <span *ngIf="!table.enabled" class="badge badge-soft-danger font-size-12">Inactif</span>
+                </td>
+                <td>
+                  <div class="text-center">
+                    <i (click)="openModal(content, table, 'update')" class="bx bx-edit me-1 text-success font-size-18"
+                      style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
+                    <i (click)="openModal(confirmation, table, 'activer')" *ngIf="!table.enabled"
+                      class="bx bx-check me-1 text-secondary font-size-20 ml-2" style="cursor: pointer;"
+                      ngbTooltip="Activer" placement="top" aria-hidden="true"></i>
+                    <i (click)="openModal(confirmation, table, 'desactiver')" *ngIf="table.enabled"
+                      class="bx bx-x me-1  text-info font-size-20 ml-2" style="cursor: pointer;" ngbTooltip="Desactiver"
+                      placement="top" aria-hidden="true"></i>
+                    <i (click)="openModal(confirmation, table, 'delete')"
+                      class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
+                      ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
+                  </div>
+                </td>
+              </tr>}
+            </tbody>
+          </table>
+        </div>
+        <div class="row justify-content-md-between align-items-md-center mt-2">
+          <div class="col-sm-12 col-md-3">
+            <div class="dataTables_info mb-2" aria-live="polite">
+              Affichage de {{(page - 1) * pageSize + 1}} à
+              {{(page - 1) * pageSize + pageSize > totalItems ? totalItems : (page - 1) * pageSize + pageSize}} sur
+              {{totalItems}} utilisateurs
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-3">
+            <div class="dataTables_length" id="tickets-table_length">
+              <label class="d-inline-flex align-items-center">Afficher
+                <select name="tickets-table_length" aria-controls="tickets-table" name="pageSize" [(ngModel)]="pageSize"
+                (input)="itemPagination($event)" class="form-control form-control-sm mx-2">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="text-md-right float-md-end pagination-rounded">
+              <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="loadUsers()">
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #content role="document" let-modal>
+  <div class="modal-header border-bottom-0">
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Utilisateur</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Utilisateur</h5>
+    <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="saveUser()" [formGroup]="editForm">
+      <div class="row">
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Prénom</label>
+          <input class="form-control" placeholder="Entrer le prénom" type="text" name="name" formControlName="firstName"
+            [ngClass]="{'is-invalid': submitted && form['prenom'].errors}" />
+          <div *ngIf="submitted && form['prenom'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le prénom est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Nom</label>
+          <input class="form-control" placeholder="Entrer le nom" type="text" name="name" formControlName="lastName"
+            [ngClass]="{'is-invalid': submitted && form['nom'].errors}" />
+          <div *ngIf="submitted && form['nom'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le Nom est obligatoire</div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Email</label>
+          <input class="form-control" placeholder="Entrer l'email" type="text" name="email" formControlName="email"
+            [ngClass]="{'is-invalid': submitted && form['email'].errors}" />
+          <div *ngIf="submitted && form['email'].errors">
+            <div class="text-danger" style="font-size: 12px;">L'email est obligatoire</div>
+          </div>
+        </div>
+        <div class="mb-3 col-6">
+          <label class="control-label mb-0" for="">Téléphone</label>
+          <input class="form-control" placeholder="Entrer le téléphone" type="number" name="name"
+            formControlName="telephone" />
+        </div>
+        <div class="mb-3 col-6">
+          <label class="control-label mb-0" for="">Adresse</label>
+          <input class="form-control" placeholder="Entrer l'adresse" type="text" name="name"
+            formControlName="adresse" />
+        </div>
+        <div class="mb-3 col-6">
+          <label class="control-label mb-0" for="">Profil</label>
+          <select class="form-select" formControlName="profil" name="" id=""
+            [ngClass]="{'is-invalid': submitted && form['profil'].errors}">
+            <option *ngFor="let item of profils" value="{{item.id}}">
+              {{item.libelle}}
+            </option>
+          </select>
+          <div *ngIf="submitted && form['profil'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le profil est obligatoire
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-2" *ngIf="errorMessage">
+        <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+      </div>
+      <div *ngIf="errorMessage500" class="mb-2">
+        <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas accéder à cette ressource,
+          veuillez contacter votre administrateur</div>
+      </div>
+      <div class="row">
+        <div class="text-end col-md-6">
+          <button (click)="closeModal('Cross click')" type="reset" class="btn btn-danger" id="btn-save-event">
+            Annuler
+          </button>
+        </div>
+        <div class="text-start col-md-6">
+          <button onclick="refreshPage()" type="submit"
+            class="btn btn-primary button-envoyer px-1 rounded-2 d-flex justify-content-center">
+            <span *ngIf="!isSubmitted">Enregistrer</span>
+            <div *ngIf="isSubmitted && editForm.valid" class="spinner-border text-white m-1" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #confirmation role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">Confirmation</h5>
+    <button type="button" class="btn-close" aria-hidden="true" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <p>
+          <span *ngIf="actionModal == 'delete'">Veuillez confirmer la suppression de: </span>
+          <span *ngIf="actionModal == 'activer'">Veuillez confirmer l'activation de: </span>
+          <span *ngIf="actionModal == 'desactiver'">Veuillez confirmer la désactivation de:
+          </span>
+          <span class="text-sonatel fw-bold ml-2">{{user['firstName']}} {{user['lastName']}}</span>
+        </p>
+      </div>
+    </div>
+    <div class="mb-2" *ngIf="errorMessage">
+      <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+    </div>
+    <div *ngIf="errorMessage500" class="mb-2">
+      <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas acceder a cette ressource
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-end col-md-6">
+        <button (click)="closeModal('ok')" class="btn btn-dark" id="btn-save-event">
+          Annuler
+        </button>
+      </div>
+      <div class="text-start col-md-6">
+        <button (click)="action()" type="submit" class="btn btn-primary" id="btn-save-event">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

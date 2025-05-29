@@ -1,0 +1,184 @@
+<!-- start page title -->
+<app-pagetitle title="Accounts" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+<div class="row">
+  <div class="col-12">
+    <div class="">
+      <div class="">
+        <div class="d-flex justify-content-between">
+          <div class="" [formGroup]="searchForm">
+            <label class="d-inline-flex align-items-center" for="">Recherche:</label>
+            <input type="text" formControlName="search" (change)="loadAccounts()" name="searchTerm"
+            class="form-control form-control-sm" aria-controls="tickets-table">
+          </div>
+          <div class="d-flex justify-content-end gap-1 mb-4">
+            <div class="">
+              <button (click)="openModal(content, null, 'add')"  class="btn btn-primary">
+                <i class="fa fa-plus"></i> Un compte</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle datatable dt-responsive table-check nowrap"
+            style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
+            <thead>
+              <tr class="bg-transparent">
+                <th>Libelle</th>
+                <th>Solde</th>
+                <th>Solde Avant</th>
+                <th>Type Account</th>
+                <th>Client</th>
+                <th>Date Dernière Modification</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of accounts; track $index) {
+                <tr>
+                  <td class="text-body">
+                    {{item.libelle}}
+                  </td>
+                  <td class="text-body">
+                    {{item.solde}}
+                  </td>
+                  <td class="text-body">
+                    {{item.solde_avant}}
+                  </td>
+                  <td>
+                    {{item.type_account ? item.type_account.libelle : ''}}
+                  </td>
+                  <td>
+                    {{item.uo ? item.uo.libelle : ''}}
+                  </td>
+                  <td>
+                    {{item.date_last_modification | date :'MMM d, y, HH:mm:ss' }}
+                  </td>
+                </tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #content role="document" let-modal>
+  <div class="modal-header border-bottom-0">
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Une Unité Organisationnelle</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Une Unité Organisationnelle</h5>
+    <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="saveAccount()" [formGroup]="editForm">
+      <div class="row">
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Libellé</label>
+          <input class="form-control" placeholder="Entrer le libellé" type="text" name="libelle" formControlName="libelle"
+            [ngClass]="{'is-invalid': submitted && form['libelle'].errors}" />
+          <div *ngIf="submitted && form['libelle'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le libellé est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Solde</label>
+          <input class="form-control" placeholder="Entrer le solde" type="text" name="solde" formControlName="solde"
+            [ngClass]="{'is-invalid': submitted && form['solde'].errors}" />
+          <div *ngIf="submitted && form['solde'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le solde est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Solde Avant</label>
+          <input class="form-control" placeholder="Entrer le solde avant" type="text" name="solde_avant" formControlName="solde_avant"
+            [ngClass]="{'is-invalid': submitted && form['solde_avant'].errors}" />
+          <div *ngIf="submitted && form['solde_avant'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le solde avant est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0">Type Account</label>
+          <select class="form-select" type="text" name="type_account_id" formControlName="type_account_id" [ngClass]="{'is-invalid': submitted && form['type_account_id'].errors}" >
+           @for (item of type_accounts; track $index) {
+            <option value={{item.id}}>{{item.libelle}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0">Unité UO</label>
+          <select class="form-select" type="text" name="uo_id" formControlName="uo_id" [ngClass]="{'is-invalid': submitted && form['uo_id'].errors}" >
+            <option value="">Aucune</option>
+            <option value="">Ipsum</option>
+          </select>
+        </div>
+      </div>
+      <div class="mb-2" *ngIf="errorMessage">
+        <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+      </div>
+      <div *ngIf="errorMessage500" class="mb-2">
+        <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas accéder à cette ressource,
+          veuillez contacter votre administrateur</div>
+      </div>
+      <div class="row">
+        <div class="text-end col-md-6">
+          <button (click)="closeModal('Cross click')" type="reset" class="btn btn-danger" id="btn-save-event">
+            Annuler
+          </button>
+        </div>
+        <div class="text-start col-md-6">
+          <button onclick="refreshPage()" type="submit"
+            class="btn btn-primary button-envoyer px-1 rounded-2 d-flex justify-content-center">
+            <span *ngIf="!isSubmitted">Enregistrer</span>
+            <div *ngIf="isSubmitted && editForm.valid" class="spinner-border text-white m-1" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+
+<ng-template #confirmation role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">Confirmation</h5>
+    <button type="button" class="btn-close" aria-hidden="true" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <p>
+          <span *ngIf="actionModal == 'delete'">Veuillez confirmer la suppression de: </span>
+          <span *ngIf="actionModal == 'activer'">Veuillez confirmer l'activation de: </span>
+          <span *ngIf="actionModal == 'desactiver'">Veuillez confirmer la désactivation de:
+          </span>
+          <span class="text-sonatel fw-bold ml-2"></span>
+        </p>
+      </div>
+    </div>
+    <div class="mb-2" *ngIf="errorMessage">
+      <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+    </div>
+    <div *ngIf="errorMessage500" class="mb-2">
+      <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas acceder a cette ressource
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-end col-md-6">
+        <button (click)="closeModal('ok')" class="btn btn-dark" id="btn-save-event">
+          Annuler
+        </button>
+      </div>
+      <div class="text-start col-md-6">
+        <button (click)="action()" type="submit" class="btn btn-primary" id="btn-save-event">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- end page title -->

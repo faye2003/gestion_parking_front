@@ -8,12 +8,14 @@ import { NgbPaginationModule, NgbHighlight, NgbTooltipModule, } from '@ng-bootst
 import { LocaliteComponent } from './localites/list-localites/list-localite.component';
 import { TypeAccountComponent } from './type_accounts/list-type-account/list-type-account.component';
 import { AccountComponent } from './accounts/list-accounts/list-account.component';
+import { TypePaiementComponent } from './type_paiements/list-type-paiement/list-type-paiement.component';
 
 @NgModule({
   declarations: [
     LocaliteComponent,
     TypeAccountComponent,
-    AccountComponent
+    AccountComponent,
+    TypePaiementComponent
   ],
   imports: [
     CommonModule,

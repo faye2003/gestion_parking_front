@@ -1,0 +1,155 @@
+<!-- start page title -->
+<app-pagetitle title="Vehicules" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+<div class="row">
+  <div class="col-12">
+    <div class="">
+      <div class="">
+        <form class="needs-validation" (ngSubmit)="loadVehicules()" [formGroup]="searchForm" novalidate>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom01">Marque</label>
+              <input formControlName="marque" name="marque" type="text" class="form-control" placeholder="Marque">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="validationCustomUsername">Immatricule</label>
+              <input formControlName="immatricule" name="immatricule" type="text" class="form-control" placeholder="Description">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom02">couleur</label>
+              <select class="form-select" type="text" formControlName="couleur" name="couleur">
+                <option selected>Choisir...</option>
+                <option *ngFor="let item of localites" [value]="item.id">{{ item.libelle }}</option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom05">Statut</label>
+              <select class="form-select" type="text" formControlName="statut" name="statut">
+                <option selected value="">Choisir...</option>
+                <option value="A_VENIR">A_VENIR</option>
+                <option value="OUVERTE">OUVERTE</option>
+                <option value="CLOTUREE">CLOTUREE</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary" type="submit">Rechercher</button>
+          </div>
+        </form><br>
+
+        <div class="table-responsive">
+          <table class="table align-middle datatable dt-responsive table-check nowrap"
+            style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
+            <thead>
+              <tr class="bg-transparent">
+                <th>Marque</th>
+                <th>Immatricule</th>
+                <th>Couleur</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of vehicules; track $index) {
+                <tr>
+                  <td class="text-body">
+                    {{ item.marque }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.immatricule }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.couleur }}
+                  </td>
+                  <td>
+                    <div class="text-center w-sm">
+                      <a [routerLink]="['/detail-vehicule/', item.id]">
+                        <i class="bx bx-show me-1 text-success font-size-18"
+                        style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
+                      </a>                   
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="row justify-content-md-between align-items-md-center mt-2">
+          <div class="col-sm-12 col-md-3">
+            <div class="dataTables_info mb-2" aria-live="polite">
+              Affichage de {{(page - 1) * pageSize + 1}} à
+              {{(page - 1) * pageSize + pageSize > totalItems ? totalItems : (page - 1) * pageSize + pageSize}} sur
+              {{totalItems}} Vehicules
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-3">
+            <div class="dataTables_length" id="tickets-table_length">
+              <label class="d-inline-flex align-items-center">Afficher
+                <select name="tickets-table_length" aria-controls="tickets-table" name="pageSize" [(ngModel)]="pageSize"
+                (input)="itemPagination($event)" class="form-control form-control-sm mx-2"  class="form-control form-control-sm mx-2">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="text-md-right float-md-end pagination-rounded">
+              <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="loadVehicules()">
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #confirmation role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">Confirmation</h5>
+    <button type="button" class="btn-close" aria-hidden="true" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <p>
+          <span *ngIf="actionModal == 'delete'">Veuillez confirmer la suppression de: </span>
+          <span *ngIf="actionModal == 'activer'">Veuillez confirmer l'activation de: </span>
+          <span *ngIf="actionModal == 'desactiver'">Veuillez confirmer la désactivation de:
+          </span>
+          <span class="text-sonatel fw-bold ml-2"></span>
+        </p>
+      </div>
+    </div>
+    <div class="mb-2" *ngIf="errorMessage">
+      <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+    </div>
+    <div *ngIf="errorMessage500" class="mb-2">
+      <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas acceder a cette ressource
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-end col-md-6">
+        <button (click)="closeModal('ok')" class="btn btn-dark" id="btn-save-event">
+          Annuler
+        </button>
+      </div>
+      <div class="text-start col-md-6">
+        <button (click)="action()" type="submit" class="btn btn-primary" id="btn-save-event">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- end page title -->
+
+
+<!-- end page title -->

@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 // counter
 import { CountUpModule } from 'ngx-countup';
@@ -19,10 +20,14 @@ import { WidgetModule } from '../shared/widget/widget.module';
 import { PagesRoutingModule } from './pages-routing.module';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ParkingComponent } from './parkings/list-parking/list-parking.component';
+import { VehiculeComponent } from './vehicules/list-vehicule/list-vehicule.component';
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    DashboardComponent,
+    ParkingComponent,
+    VehiculeComponent
   ],
   imports: [
     CommonModule,
@@ -37,7 +42,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     RouterModule,
     NgbDropdownModule,
     NgbNavModule,
-    LeafletModule
+    LeafletModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

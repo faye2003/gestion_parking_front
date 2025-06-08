@@ -2,11 +2,21 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { VehiculeComponent } from './vehicules/list-vehicule/list-vehicule.component';
+import { ParkingComponent } from './parkings/list-parking/list-parking.component';
 
 const routes: Routes = [
   {
     path: '',
     component: DashboardComponent
+  },
+  {
+    path: 'parking',
+    component: ParkingComponent
+  },
+  {
+    path: 'vehicule',
+    component: VehiculeComponent
   },
   {
     // canActivate: [AuthGuard],

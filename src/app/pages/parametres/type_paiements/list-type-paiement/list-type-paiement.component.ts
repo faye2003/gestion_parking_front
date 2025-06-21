@@ -56,13 +56,12 @@ export class TypePaiementComponent implements OnInit {
   }
 
   loadTypePaiements() {
-    // console.log(this.searchForm.value);
     this.typePaiementService.getTypePaiements(this.page, this.pageSize, this.searchForm.value).subscribe(
       // users => this.users = users
         (response: any) => {
           if (response.status) {
-            this.type_paiements = response.data;
-            this.totalItems = response.meta ? response.meta.total : 0;
+            this.type_paiements = response.data.data || [];
+            this.totalItems = response.meta?.count || 0;
           } else {
             this.errorMessage = response.message || 'Une erreur est survenue';
           }
@@ -92,20 +91,25 @@ export class TypePaiementComponent implements OnInit {
     this.errorMessage500 = ""
   }
 
-  deleteTypePaiement() {
-    this.typePaiementService.deleteTypePaiement(this.type_paiement.id).subscribe(
-      (response: any) => {
-        if (response['status'] == "success") {
-          this.closeModal('ok');
-          Swal.fire('Supprimé!', 'Le type paiement a été supprimé.', 'success');
-          this.loadTypePaiements();
-        } else {
-          this.errorMessage = response['message'];
-          Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
+   isSuccessResponse(response: any): boolean {
+      return response && typeof response === 'object' && response.status === true;
+    }
+  
+  
+    deleteTypePaiement() {
+      this.typePaiementService.deleteTypePaiement(this.type_paiement.id).subscribe(
+        (response: any) => {
+          if (this.isSuccessResponse(response)) {
+            this.closeModal('ok');
+            Swal.fire('Supprimé!', 'Le type paiement a été supprimé.', 'success');
+            this.loadTypePaiements();
+          } else {
+            this.errorMessage = response?.message;
+            Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
+          }
         }
-      }
-    );
-  }
+      );
+    }
 
   saveTypePaiement() {
     if (this.actionModal == "add") {
@@ -115,25 +119,28 @@ export class TypePaiementComponent implements OnInit {
         const formData = this.editForm.value;
         // console.log(formData.parent_id);
         this.typePaiementService.createTypePaiement(formData)
-          .subscribe(
-            (res: any) => {
-              if (res['status'] !== "success") {
-                this.isSubmitted = false;
-                this.errorMessage = res['message'];
-                Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
-              }
-              else {
-                this.closeModal("add");
-                this.editForm.reset()
-                this.ngOnInit()
-                this.isSubmitted = false;
-                Swal.fire('Ajout réussi !', 'Le type paiement a été ajouté.', 'success');
-              }
-            }, _error => {
+        .subscribe({
+          next: (response: any) => {
+            console.log('Réponse backend :', response);
+            if (!response?.status) {
               this.isSubmitted = false;
-              this.errorMessage = _error['message'];
+              this.errorMessage = response?.message || 'Une erreur est survenue.';
+              Swal.fire('Erreur!', this.errorMessage, 'error');
+            } else {
+              this.closeModal("add");
+              this.editForm.reset();
+              this.loadTypePaiements();
+              this.isSubmitted = false;
+              Swal.fire('Ajout réussi !', response.message || 'Ajout réussi.', 'success');
             }
-          );
+          },
+          error: (_error) => {
+            this.isSubmitted = false;
+            this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
+            Swal.fire('Erreur!', this.errorMessage, 'error');
+          }
+        });
+        
       }
       else {
         this.errorMessage = "Veuillez remplir le formulaire";
@@ -142,15 +149,16 @@ export class TypePaiementComponent implements OnInit {
       this.isSubmitted = true;
       this.typePaiementService.updateTypePaiement(this.type_paiement.id, this.editForm.value)
         .subscribe(
-          (res: any) => {
-            if (res['status'] !== "success") {
-              this.errorMessage = res['message'];
+          (response: any) => {
+            if (!response?.status) {
+              this.errorMessage = response['message'];
               this.isSubmitted = false;
             } else {
               this.closeModal("ok");
               this.editForm.reset();
-              this.ngOnInit();
+              this.loadTypePaiements();
               this.isSubmitted = false;
+              Swal.fire('Mise à jour réussi !', response?.message || 'Mise à jour réussi.', 'success');
             }
           }, _error => {
             this.isSubmitted = false;

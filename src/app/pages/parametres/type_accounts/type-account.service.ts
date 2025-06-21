@@ -13,33 +13,32 @@ export class TypeAccountService {
 
     getTypeAccounts(page: number, limit: number, data: any): Observable<any> {
         let dataParams = {
-            page: page, limit: limit,
-            libelle: data.libelle ?? '',
-            parent_id: data.parent_id ?? '',
+            page: page,
+            limit: limit,
             search: data.search ?? ''
         }
         let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json'});
         let option = { headers: reqHeader, params: dataParams }
         console.log(this.apiUrl);
-        return this.http.get<any>(this.apiUrl + '/api/type_account/', option);
+        return this.http.get<any>(this.apiUrl + '/api/type-account/', option);
     }
 
     getTypeAccountsById(id: number): Observable<any> {
-        return this.http.get<any>(this.apiUrl + '/api/type_account/' + id);
+        return this.http.get<any>(this.apiUrl + '/api/type-account/' + id);
     }
 
     createTypeAccount(type_account: TypeAccount): Observable<any> { // CREATE
-        return this.http.post<any>(this.apiUrl + '/api/type_account/', type_account);
+        return this.http.post<any>(this.apiUrl + '/api/type-account/', type_account);
     }
       
 
     updateTypeAccount(id: number, type_account: TypeAccount): Observable<any> { // UPDATE
-        return this.http.put<any>(this.apiUrl + '/api/type_account/' + id, type_account);
-      }
+        return this.http.put<any>(this.apiUrl + '/api/type-account/' + id + '/', type_account);
+    }
 
     deleteTypeAccount(id: number): Observable<any> { // DELETE
         // console.log(this.apiUrl);
-        return this.http.delete<any>(this.apiUrl + '/api/type_account/' + id);
+        return this.http.delete<any>(this.apiUrl + '/api/type-account/' + id + '/');
     }
       
     

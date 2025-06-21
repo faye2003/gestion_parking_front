@@ -56,13 +56,12 @@ export class TypeAccountComponent implements OnInit {
   }
 
   loadTypeAccounts() {
-    // console.log(this.searchForm.value);
     this.typeAccountService.getTypeAccounts(this.page, this.pageSize, this.searchForm.value).subscribe(
-      // users => this.users = users
         (response: any) => {
-          if (response.status) {
-            this.type_accounts = response.data;
-            this.totalItems = response.meta ? response.meta.total : 0;
+          // console.log("this.searchForm.value");
+          if (response) {
+            this.type_accounts = response.data.data || [];
+            this.totalItems = response.meta?.count || 0;
           } else {
             this.errorMessage = response.message || 'Une erreur est survenue';
           }
@@ -70,8 +69,14 @@ export class TypeAccountComponent implements OnInit {
     );
   }
 
-  itemPagination(event: any) {
-    this.pageSize = event.target.value;
+  // itemPagination(event: any) {
+  //   this.pageSize = event.target.value;
+  //   this.ngOnInit();
+  // }
+
+  itemPagination(event: any): void {
+    this.pageSize = parseInt(event.target.value, 10);
+    this.page = 1;  // ✅ remettre la pagination à la première page
     this.ngOnInit();
   }
 
@@ -92,15 +97,20 @@ export class TypeAccountComponent implements OnInit {
     this.errorMessage500 = ""
   }
 
+  isSuccessResponse(response: any): boolean {
+    return response && typeof response === 'object' && response.status === true;
+  }
+
+
   deleteTypeAccount() {
     this.typeAccountService.deleteTypeAccount(this.type_account.id).subscribe(
       (response: any) => {
-        if (response['status'] == "success") {
+        if (this.isSuccessResponse(response)) {
           this.closeModal('ok');
           Swal.fire('Supprimé!', 'Le type account a été supprimé.', 'success');
           this.loadTypeAccounts();
         } else {
-          this.errorMessage = response['message'];
+          this.errorMessage = response?.message;
           Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
         }
       }
@@ -108,57 +118,60 @@ export class TypeAccountComponent implements OnInit {
   }
 
   saveTypeAccount() {
-    if (this.actionModal == "add") {
-      // console.log(this.editForm.valid);
-      if (this.editForm.valid) {
-        this.isSubmitted = true;
-        const formData = this.editForm.value;
-        // console.log(formData.parent_id);
-        this.typeAccountService.createTypeAccount(formData)
-          .subscribe(
-            (res: any) => {
-              if (res['status'] !== "success") {
-                this.isSubmitted = false;
-                this.errorMessage = res['message'];
-                Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
-              }
-              else {
-                this.closeModal("add");
-                this.editForm.reset()
-                this.ngOnInit()
-                this.isSubmitted = false;
-                Swal.fire('Ajout réussi !', 'Le type account a été ajouté.', 'success');
-              }
-            }, _error => {
-              this.isSubmitted = false;
-              this.errorMessage = _error['message'];
-            }
-          );
-      }
-      else {
-        this.errorMessage = "Veuillez remplir le formulaire";
-      }
-    } else {
+  if (this.actionModal == "add") {
+    if (this.editForm.valid) {
       this.isSubmitted = true;
-      this.typeAccountService.updateTypeAccount(this.type_account.id, this.editForm.value)
-        .subscribe(
-          (res: any) => {
-            if (res['status'] !== "success") {
-              this.errorMessage = res['message'];
-              this.isSubmitted = false;
-            } else {
-              this.closeModal("ok");
-              this.editForm.reset();
-              this.ngOnInit();
-              this.isSubmitted = false;
-            }
-          }, _error => {
+      const formData = this.editForm.value;
+      this.typeAccountService.createTypeAccount(formData)
+      .subscribe({
+        next: (response: any) => {
+          console.log('Réponse backend :', response);
+          if (!response?.status) {
             this.isSubmitted = false;
-            this.errorMessage = _error['message'];
+            this.errorMessage = response?.message || 'Une erreur est survenue.';
+            Swal.fire('Erreur!', this.errorMessage, 'error');
+          } else {
+            this.closeModal("add");
+            this.editForm.reset();
+            this.loadTypeAccounts();
+            this.isSubmitted = false;
+            Swal.fire('Ajout réussi !', response.message || 'Ajout réussi.', 'success');
           }
-        );
+        },
+        error: (_error) => {
+          this.isSubmitted = false;
+          this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
+          Swal.fire('Erreur!', this.errorMessage, 'error');
+        }
+      });
+
+    } else {
+      this.errorMessage = "Veuillez remplir le formulaire";
     }
+  } else {
+    this.isSubmitted = true;
+    this.typeAccountService.updateTypeAccount(this.type_account.id, this.editForm.value)
+      .subscribe(
+        (response: any) => {
+          if (!response?.status) {
+            this.errorMessage = response?.message;
+            this.isSubmitted = false;
+          } else {
+            this.closeModal("ok");
+            this.editForm.reset();
+            this.loadTypeAccounts();
+            this.isSubmitted = false;
+            Swal.fire('Mise à jour réussi !', response?.message || 'Mise à jour réussi.', 'success');
+          }
+        },
+        _error => {
+          this.isSubmitted = false;
+          this.errorMessage = _error?.message || 'Erreur réseau ou serveur';
+        }
+      );
   }
+}
+
 
   get form() {
     return this.editForm.controls

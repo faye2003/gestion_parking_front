@@ -37,10 +37,10 @@
                     </ngb-highlight>
                   </td>
                   <td>
-                    {{item.type_localite ? item.type_localite.libelle : ''}}
+                    {{ item.latitude }}
                   </td>
                   <td>
-                    {{item.parent ? item.parent.libelle : ''}}
+                    {{ item.longitude }}
                   </td>
                   <td>
                     <div class="text-center">
@@ -110,24 +110,22 @@
           </div>
         </div>
         <div class="col-6 mb-3">
-          <!-- <label for="exampleDataList" class="control-label mb-0">Type</label>
-          <input class="form-control" list="datalistOptions" id="exampleDataList"
-              placeholder="Taper pour choisir..."  type="text" name="parent_id" formControlName="parent_id">
-          <datalist id="datalistOptions"> -->
-            <!-- <option *ngFor="let item of type_localites" value="{{ item.id }}">
-              {{ item.parent_id == null ? '' : item.libelle }}
-            </option> -->
-            <!-- @for (item of type_localites; track $index) {
-              <option value={{item.libelle}}>
-            }
-          </datalist> -->
-          <label class="control-label mb-0">Parent</label>
-          <select class="form-select" type="text" name="parent_id" formControlName="parent_id" [ngClass]="{'is-invalid': submitted && form['parent_id'].errors}" >
-            <option value={{null}}>Aucune</option>
-            @for (item of localites; track $index) {
-            <option value={{item.id}}>{{item.libelle}}</option>
-            }
-          </select>
+          <label class="control-label mb-0" for="">Latitude</label>
+          <input class="form-control" placeholder="Entrer la latitude" type="number" name="latitude" formControlName="latitude"
+            [ngClass]="{'is-invalid': submitted && form['latitude'].errors}" />
+          <div *ngIf="submitted && form['latitude'].errors">
+            <div class="text-danger" style="font-size: 12px;">La latitude est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Longitude</label>
+          <input class="form-control" placeholder="Entrer la longitude" type="number" name="longitude" formControlName="longitude"
+            [ngClass]="{'is-invalid': submitted && form['longitude'].errors}" />
+          <div *ngIf="submitted && form['longitude'].errors">
+            <div class="text-danger" style="font-size: 12px;">La longitude est obligatoire
+            </div>
+          </div>
         </div>
       </div>
       <div class="mb-2" *ngIf="errorMessage">
@@ -160,7 +158,7 @@
 
 <ng-template #confirmation role="document" let-modal>
   <div class="modal-header">
-    <h5 class="modal-title mt-0">Confirmation</h5>
+    <h2 class="modal-title mt-0">Confirmation</h2>
     <button type="button" class="btn-close" aria-hidden="true" (click)="closeModal('Cross click')"></button>
   </div>
   <div class="modal-body">

@@ -60,8 +60,7 @@ export class ParkingComponent implements OnInit {
       libelle: [''],
       description: [''],
       statut: [''],
-      localite_id: [''],
-      place_id: [''],
+      localite: [''],
     });
   }
 
@@ -72,8 +71,6 @@ export class ParkingComponent implements OnInit {
     ];
     this.loadParkings();
     this.loadLocalites();
- //   this.loadDonneurs();
-  //  this.loadPocheSangs();
   }
 
 
@@ -81,7 +78,7 @@ export class ParkingComponent implements OnInit {
     this.localiteService.getLocalites(this.page, 100, {}).subscribe(
       (response: any) => {
         if (response.status) {
-          this.localites = response.data;
+          this.localites = response.data.data;
         } else {
           this.errorMessage = response.message || 'Une erreur est survenu';
         }
@@ -94,9 +91,9 @@ export class ParkingComponent implements OnInit {
     this.parkingService.getParkings(this.page, this.pageSize, this.searchForm.value).subscribe(
       (response: any) => {
         if (response.status) {
-          this.parkings = response.data;
+          this.parkings = response.data.data || [];
           console.log(this.parkings);
-          this.totalItems = response.meta ? response.meta.total : 0;
+          this.totalItems =  response.meta?.count || 0;
         } else {
           this.errorMessage = response.message || 'Une erreur est survenue';
         }
@@ -112,9 +109,10 @@ export class ParkingComponent implements OnInit {
     this.selectedProduct = null;
   }
 
-  itemPagination(event: any) {
-    this.pageSize = event.target.value;
-    this.loadParkings();
+  itemPagination(event: any): void {
+    this.pageSize = parseInt(event.target.value, 10);
+    this.page = 1;  // ✅ remettre la pagination à la première page
+    this.ngOnInit();
   }
 
   openModal(modalname: any, item: any, action: any) {
@@ -126,8 +124,7 @@ export class ParkingComponent implements OnInit {
         libelle: this.parking.libelle,
         description: this.parking.description,
         statut: this.parking.statut,
-        place_id: this.parking.place?.id,
-        localite_id: this.parking.localite?.id
+        localite: this.parking.localite
       });
     } else {
       this.editForm.reset();
@@ -142,10 +139,15 @@ export class ParkingComponent implements OnInit {
     this.errorMessage500 = ""
   }
 
+
+  isSuccessResponse(response: any): boolean {
+    return response && typeof response === 'object' && response.status === true;
+  }
+
   deleteParking() {
     this.parkingService.deleteParking(this.parking.id).subscribe(
       (response: any) => {
-        if (response['status'] == "success") {
+        if (this.isSuccessResponse(response)) {
           this.closeModal('ok');
           Swal.fire('Supprimé!', 'cette banque de sanque a été supprimé.', 'success');
           this.loadParkings();
@@ -165,25 +167,27 @@ export class ParkingComponent implements OnInit {
         const formData = this.editForm.value;
         // console.log(formData.parent_id);
         this.parkingService.createParking(formData)
-          .subscribe(
-            (res: any) => {
-              if (res['status'] !== "success") {
+          .subscribe({
+            next: (response: any) => {
+              console.log('Réponse backend :', response);
+              if (!response?.status) {
                 this.isSubmitted = false;
-                this.errorMessage = res['message'];
-                Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
-              }
-              else {
+                this.errorMessage = response?.message || 'Une erreur est survenue.';
+                Swal.fire('Erreur!', this.errorMessage, 'error');
+              } else {
                 this.closeModal("add");
-                this.editForm.reset()
-                this.loadParkings()
+                this.editForm.reset();
+                this.loadParkings();
                 this.isSubmitted = false;
-                Swal.fire('Ajout réussi !', 'Banque de sang a été ajouté.', 'success');
+                Swal.fire('Ajout réussi !', response.message || 'Ajout réussi.', 'success');
               }
-            }, _error => {
+            },
+            error: (_error) => {
               this.isSubmitted = false;
-              this.errorMessage = _error['message'];
+              this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
+              Swal.fire('Erreur!', this.errorMessage, 'error');
             }
-          );
+          });
       }
       else {
         this.errorMessage = "Veuillez remplir le formulaire"
@@ -191,23 +195,27 @@ export class ParkingComponent implements OnInit {
     } else {
       this.isSubmitted = true;
       this.parkingService.updateParking(this.parking.id, this.editForm.value)
-        .subscribe(
-          (res: any) => {
-            if (res['status'] !== "success") {
-              this.errorMessage = res['message'];
+        .subscribe({
+          next: (response: any) => {
+            console.log('Réponse backend :', response);
+            if (!response?.status) {
               this.isSubmitted = false;
+              this.errorMessage = response?.message || 'Une erreur est survenue.';
+              Swal.fire('Erreur!', this.errorMessage, 'error');
             } else {
-              this.closeModal("ok");
+              this.closeModal("add");
               this.editForm.reset();
               this.loadParkings();
               this.isSubmitted = false;
-                Swal.fire('Ajout réussi !', 'cette banque de sang a été mis à jour.', 'success');
+              Swal.fire('Mise à jour réussi !', response.message || 'Mise à jour réussi.', 'success');
             }
-          }, _error => {
+          },
+          error: (_error) => {
             this.isSubmitted = false;
-            this.errorMessage = _error['message'];
+            this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
+            Swal.fire('Erreur!', this.errorMessage, 'error');
           }
-        );
+        });
     }
   }
 

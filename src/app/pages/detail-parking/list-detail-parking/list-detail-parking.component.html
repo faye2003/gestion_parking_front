@@ -1,0 +1,571 @@
+<!-- start page title -->
+<app-pagetitle title="Détail Campagne" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+<div class="row">
+  <div class="col-12">
+    <div class="">
+      <div class="">
+        @for (item of detail_campagnes; track $index) {
+          
+          <form class="" novalidate>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom01">Campagne</label>
+                <input type="text" class="form-control" id="validationCustom01" placeholder="" value="{{ item.description }}" readonly>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom02">Banque de Sang</label>
+                <input type="text" class="form-control" id="validationCustom02" placeholder="" value="{{item.uo ? item.uo.libelle : ''}}" readonly>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="validationCustomUsername">Localité</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="validationCustomUsername" placeholder=""  value="{{item.localite ? item.localite.libelle : ''}}" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom01">Date Début</label>
+                <input type="text" class="form-control" id="validationCustom01" placeholder="" value="{{ item.date_debut | date :'MMM d, y' }}" readonly>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom02">Date Fin</label>
+                <input type="text" class="form-control" id="validationCustom02" placeholder="" value="{{ item.date_fin | date :'MMM d, y' }}" readonly>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="validationCustomUsername">Statut</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="validationCustomUsername" placeholder=""  value="{{ item.statut }}" readonly>
+                </div>
+              </div>
+            </div>
+          </form><br>
+        }
+
+<div class="row" *ngIf="campagne?.statut === 'Ouverte'; else autreStatut">
+
+    <div class="col-xl-12">
+        <div class="card p-3">
+          <!-- Nav tabs -->
+          <ul ngbNav #nav="ngbNav" [activeId]="1" class="nav-tabs">
+              <li [ngbNavItem]="1">
+                  <a ngbNavLink>
+                      <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                      <span class="d-none d-sm-block">Poche de Sang</span>
+                  </a>
+                  <ng-template ngbNavContent>
+                      <ng-template [ngTemplateOutlet]="TabContent"></ng-template>
+                  </ng-template>
+              </li>
+              <li [ngbNavItem]="2">
+                  <a ngbNavLink>
+                      <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                      <span class="d-none d-sm-block">Donneur</span>
+                  </a>
+                  <ng-template ngbNavContent>
+                      <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
+                  </ng-template>
+              </li>
+          </ul>
+          <div [ngbNavOutlet]="nav" class="text-muted"></div>
+        </div><!-- end card -->
+    </div><!-- end col -->
+
+</div><!-- end row -->
+
+<!-- Sinon on affiche un message selon le statut -->
+<ng-template #autreStatut>
+  <div class="alert alert-info" *ngIf="campagne">
+    Cette campagne est actuellement :
+    <strong>{{ campagne.statut | titlecase }}</strong>&nbsp;
+    <div class="d-flex justify-content-end gap-1 mb-4">
+      <div class="mt-2">
+        <button (click)="openModal(confirmation, campagne, 'open')" class="btn btn-success">
+          <i class="fa fa-star"></i> Ouvrir la campagne</button>
+      </div>
+      <div class="">
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #TabContent>
+<div class="row">
+  <div class="col-12">
+    <div class="">
+      <div class="">
+        <div class="d-flex justify-content-end gap-1 mb-4">
+          <div class="mt-2">
+            <!-- <button class="btn btn-primary">
+              <i class="fa fa-upload"></i> Import CSV</button>&nbsp; -->
+            <button (click)="openModal(confirmation, null, 'stock')"
+                    class="btn btn-primary">
+              <i class="fa fa-paper-plane"></i> Transfert
+            </button>&nbsp;
+            <button (click)="openModal(content, null, 'add')"  class="btn btn-success">
+              <i class="fa fa-plus"></i> Nouvelle Poche</button>
+          </div>
+          <div class="">
+          </div>
+        </div>
+        <form class="needs-validation" novalidate>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom01">Donneur</label>
+              <input type="text" class="form-control" id="validationCustom01" placeholder="Donneur">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom02">Groupe Sanguin</label>
+              <select class="form-select mr-sm-2" id="inlineFormCustomSelect">
+                <option selected>Choisir...</option>
+                @for (item of groupe_sanguins; track $index) {
+                  <option value={{item.id}}>{{item.nom}}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-3 p-4 mt-1">
+              <button class="btn btn-primary" type="submit">Rechercher</button>
+            </div>
+          </div>
+        </form><br>
+
+        <div class="table-responsive">
+          <table class="table align-middle datatable dt-responsive table-check nowrap"
+            style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
+            <thead>
+              <tr class="bg-transparent">
+                <th>fd</th>
+                <th>Quantité</th>
+                <th>Donneur</th>
+                <th>Groupe Sanguin</th>
+                <th>Campagne</th>
+                <th>Statut</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of campagne_poche_sangs; track $index) {
+                <tr>
+                  <td>
+                    <input 
+                      type="checkbox"
+                      [disabled]="item.statut !== 'Validée'"
+                      [(ngModel)]="item.selected"
+                    />
+                  </td>
+                  <td class="text-body">
+                    {{ item.quantite }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.donneur ? item.donneur.firstName : '' }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.groupe_sanguin ? item.groupe_sanguin.nom : '' }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.campagne ? item.campagne.description : '' }}
+                  </td>
+                  <td class="text-body">
+                    <span [ngClass]="getBadgeClass(item.statut)">{{ item.statut }}</span>
+                  </td>
+                  <td>
+                    <div class="text-center">
+                        <ng-container *ngIf="item.statut === 'Brouillon'; else statutBadge">
+                          <button (click)="openModal(confirmation, item, 'valid')" type="button" class="btn btn-outline-success">Valider</button>&nbsp;
+                        </ng-container>
+
+                        <ng-template #statutBadge>
+                          <span class="badge bg-light">Prêt Stockage</span>
+                        </ng-template>
+                        <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-success font-size-18"
+                          style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>                    
+                        <i (click)="openModal(confirmation, item, 'delete')"
+                          class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
+                          ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-end gap-1 mb-4">
+          <div class="mt-2">
+            <button (click)="openModal(confirmation, campagne, 'close')" class="btn btn-danger">
+              <i class="fa fa-window-close"></i> Clôturer la campagne</button>
+          </div>
+          <div class="">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</ng-template>
+
+<!-- Tab Content -->
+<ng-template #TabContent1>
+<div class="row">
+  <div class="col-12">
+    <div class="">
+      <div class="">
+        <div class="d-flex justify-content-end gap-1 mb-4">
+          <div class="mt-2">
+            <button (click)="openModalDonneur(contentDonneur, null, 'add')"  class="btn btn-success">
+              <i class="fa fa-plus"></i> Nouveau donneur</button>
+          </div>
+          <div class="">
+          </div>
+        </div>
+        <form class="needs-validation" novalidate>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom01">Donneur</label>
+              <input type="text" class="form-control" id="validationCustom01" placeholder="Donneur">
+            </div>
+            <div class="col-md-3 p-4 mt-1">
+              <button class="btn btn-primary" type="submit">Rechercher</button>
+            </div>
+          </div>
+        </form><br>
+
+        <div class="table-responsive">
+          <table class="table align-middle datatable dt-responsive table-check nowrap"
+            style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
+            <thead>
+              <tr class="bg-transparent">
+                <th>Prénom Nom</th>
+                <th>Date de Naissance</th>
+                <th>Téléphone</th>
+                <th>Adresse</th>
+                <th>Groupe Sanguin</th>
+                <th>Email</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of campagne_donneurs; track $index) {
+                <tr>
+                  <td class="text-body">
+                    {{ item.firstName + ' ' + item.lastName}}
+                  </td>
+                  <td class="text-body">
+                    {{ item.date_naissance | date :'MMM d, y' }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.telephone }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.adresse }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.groupe_sanguin ? item.groupe_sanguin.nom : '' }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.email }}
+                  </td>
+                  <td>
+                    <div class="text-center">
+                        <a [routerLink]="['/detail-donneur/', item.id]">
+                          <i class="bx bx-show me-1 text-success font-size-18"
+                          style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
+                        </a>
+                        <i (click)="openModalDonneur(contentDonneur, item, 'update')" class="bx bx-edit me-1 text-success font-size-18"
+                          style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>                    
+                        <i (click)="openModalDonneur(confirmationDonneur, item, 'delete')"
+                        class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
+                        ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="row justify-content-md-between align-items-md-center mt-2">
+          <div class="col-sm-12 col-md-3">
+            <div class="dataTables_info mb-2" aria-live="polite">
+              Affichage de {{(page - 1) * pageSize + 1}} à
+              {{(page - 1) * pageSize + pageSize > totalItems ? totalItems : (page - 1) * pageSize + pageSize}} sur
+              {{totalItems}} Donneurs
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-3">
+            <div class="dataTables_length" id="tickets-table_length">
+              <label class="d-inline-flex align-items-center">Afficher
+                <select name="tickets-table_length" aria-controls="tickets-table" name="pageSize" [(ngModel)]="pageSize"
+                (input)="itemPagination($event)" class="form-control form-control-sm mx-2"  class="form-control form-control-sm mx-2">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="text-md-right float-md-end pagination-rounded">
+              <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="loadDonneurs()">
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</ng-template>
+        
+  </div>
+</div>
+
+
+<ng-template #content role="document" let-modal>
+  <div class="modal-header border-bottom-0">
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Une Poche de Sang</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Une Poche de Sang</h5>
+    <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="savePocheDeSang()" [formGroup]="editForm">
+      <div class="row">
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Quantité</label>
+          <input class="form-control" placeholder="Entrer la quantité" type="text" name="quantite" formControlName="quantite"
+            [ngClass]="{'is-invalid': submitted && form['quantite'].errors}" />
+          <div *ngIf="submitted && form['libelle'].errors">
+            <div class="text-danger" style="font-size: 12px;">La quantité est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Donneur</label>
+          <select class="form-select" type="text" name="donneur" formControlName="donneur_id" [ngClass]="{'is-invalid': submitted && form['donneur_id'].errors}" >
+            @for (item of donneurs; track $index) {
+            <option value={{item.id}}>{{item.firstName + ' ' + item.lastName}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Groupe Sanguin</label>
+          <select class="form-select" type="text" name="groupe_sanguin_id" formControlName="groupe_sanguin_id" [ngClass]="{'is-invalid': submitted && form['groupe_sanguin_id'].errors}" >
+            @for (item of groupe_sanguins; track $index) {
+            <option value={{item.id}}>{{item.nom}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0">Campagne</label>
+          <select class="form-select" type="text" name="campagne_id" formControlName="campagne_id" [ngClass]="{'is-invalid': submitted && form['campagne_id'].errors}" >
+            @for (item of detail_campagnes; track $index) {
+            <option value={{item.id}}>{{item.description}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="mb-2" *ngIf="errorMessage">
+        <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+      </div>
+      <div *ngIf="errorMessage500" class="mb-2">
+        <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas accéder à cette ressource,
+          veuillez contacter votre administrateur</div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitted">
+          <span *ngIf="!isSubmitted">Enregistrer</span>
+          <span *ngIf="isSubmitted" class="spinner-border spinner-border-sm"></span>
+        </button>
+        <button type="button" class="btn btn-light" (click)="modal.dismiss()">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #contentDonneur role="document" let-modal>
+  <div class="modal-header border-bottom-0">
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Un nouvveau donneur</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Un donneur</h5>
+    <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="saveDonneur()" [formGroup]="editFormDonneur">
+      <div class="row">
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Prénom</label>
+          <input class="form-control" placeholder="Entrer le prénom" type="text" name="firstName" formControlName="firstName"
+            [ngClass]="{'is-invalid': submitted && formDonneur['firstName'].errors}" />
+          <div *ngIf="submitted && formDonneur['firstName'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le prénom est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Nom</label>
+          <input class="form-control" placeholder="Entrer le nom" type="text" name="lastName" formControlName="lastName"
+            [ngClass]="{'is-invalid': submitted && formDonneur['lastName'].errors}" />
+          <div *ngIf="submitted && formDonneur['lastName'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le nom est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Email</label>
+          <input class="form-control" placeholder="Entrer le email" type="text" name="email" formControlName="email"
+            [ngClass]="{'is-invalid': submitted && formDonneur['email'].errors}" />
+          <div *ngIf="submitted && formDonneur['email'].errors">
+            <div class="text-danger" style="font-size: 12px;">L'adresse email est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Date de Naissance</label>
+          <input class="form-control" placeholder="Entrer la date de naissance" type="date" name="date_naissance" formControlName="date_naissance"
+            [ngClass]="{'is-invalid': submitted && formDonneur['date_naissance'].errors}" />
+          <div *ngIf="submitted && formDonneur['date_naissance'].errors">
+            <div class="text-danger" style="font-size: 12px;">La date de naissance est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Téléphone</label>
+          <input class="form-control" placeholder="Entrer le téléphone" type="text" name="telephone" formControlName="telephone"
+            [ngClass]="{'is-invalid': submitted && formDonneur['telephone'].errors}" />
+          <div *ngIf="submitted && formDonneur['telephone'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le numéro de téléphone est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Adresse</label>
+          <input class="form-control" placeholder="Entrer le adresse" type="text" name="adresse" formControlName="adresse"
+            [ngClass]="{'is-invalid': submitted && formDonneur['adresse'].errors}" />
+          <div *ngIf="submitted && formDonneur['adresse'].errors">
+            <div class="text-danger" style="font-size: 12px;">L'adresse est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0">Profile</label>
+          <select class="form-select" type="text" name="profil_id" formControlName="profil_id" [ngClass]="{'is-invalid': submitted && form['profil_id'].errors}" >
+            @for (item of profils; track $index) {
+            <option value={{item.id}}>{{item.nom}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0">Groupe Sanguin</label>
+          <select class="form-select" type="text" name="groupe_sanguin_id" formControlName="groupe_sanguin_id" [ngClass]="{'is-invalid': submitted && form['groupe_sanguin_id'].errors}" >
+            @for (item of groupe_sanguins; track $index) {
+            <option value={{item.id}}>{{item.nom}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="mb-2" *ngIf="errorMessage">
+        <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+      </div>
+      <div *ngIf="errorMessage500" class="mb-2">
+        <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas accéder à cette ressource,
+          veuillez contacter votre administrateur</div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitted">
+          <span *ngIf="!isSubmitted">Enregistrer</span>
+          <span *ngIf="isSubmitted" class="spinner-border spinner-border-sm"></span>
+        </button>
+        <button type="button" class="btn btn-light" (click)="modal.dismiss()">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #confirmation role="document" let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title mt-0">Confirmation</h2>
+    <button type="button" class="btn-close" aria-hidden="true" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <p>
+          <span *ngIf="actionModal == 'delete'">Veuillez confirmer la suppression de: </span>
+          <span *ngIf="actionModal == 'open'">Voulez-vous confirmer l'ouverture de la campagne ?</span>
+          <span *ngIf="actionModal == 'close'">Voulez-vous confirmer la clôture de la campagne ?</span>
+          <span *ngIf="actionModal == 'valid'">Voulez-vous confirmer la validation de ce poche ?</span>
+          <span *ngIf="actionModal == 'stock'">Voulez-vous confirmer le transfert dans le stock ?</span>
+          <span class="text-sonatel fw-bold ml-2"></span>
+        </p>
+      </div>
+    </div>
+    <div class="mb-2" *ngIf="errorMessage">
+      <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+    </div>
+    <div *ngIf="errorMessage500" class="mb-2">
+      <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas acceder a cette ressource
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-end col-md-6">
+        <button (click)="closeModal('ok')" class="btn btn-dark" id="btn-save-event">
+          Annuler
+        </button>
+      </div>
+      <div class="text-start col-md-6">
+        <button (click)="action()" type="submit" class="btn btn-primary" id="btn-save-event">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Modal confirmation pour donneur -->
+<ng-template #confirmationDonneur role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">Confirmation</h5>
+    <button type="button" class="btn-close" aria-hidden="true" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <p>
+          <span *ngIf="actionModal == 'delete'">Veuillez confirmer la suppression de: </span>
+          <span *ngIf="actionModal == 'activer'">Veuillez confirmer l'activation de: </span>
+          <span *ngIf="actionModal == 'desactiver'">Veuillez confirmer la désactivation de:
+          </span>
+          <span class="text-sonatel fw-bold ml-2"></span>
+        </p>
+      </div>
+    </div>
+    <div class="mb-2" *ngIf="errorMessage">
+      <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+    </div>
+    <div *ngIf="errorMessage500" class="mb-2">
+      <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas acceder a cette ressource
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-end col-md-6">
+        <button (click)="closeModal('ok')" class="btn btn-dark" id="btn-save-event">
+          Annuler
+        </button>
+      </div>
+      <div class="text-start col-md-6">
+        <button (click)="action()" type="submit" class="btn btn-primary" id="btn-save-event">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- end page title -->
+
+
+<!-- end page title -->

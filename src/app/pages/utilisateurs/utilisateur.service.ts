@@ -13,48 +13,46 @@ export class UserService {
 
   getUsers(page: number, limit: number, data: any): Observable<any> {
     let dataParams = {
-      page: page, limit: limit,
-      firstName: data.firstName ?? '',
-      email: data.email ?? '',
-      lastName: data.lastName ?? '',
-      search: data.search ?? ''
+      page: page,
+      limit: limit,
+      search: data?.search || ''
     }
     const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : '';
     console.log(token)
     let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 		let option = { headers: reqHeader, params: dataParams }
-    return this.http.get<Utilisateur>(this.apiUrl + '/api/users', option);
+    return this.http.get<Utilisateur>(this.apiUrl + '/api/users/', option);
   }
 
   getUserById(id: number): Observable<Utilisateur> {
-    return this.http.get<Utilisateur>(this.apiUrl + '/api/users/' + id);
+    return this.http.get<Utilisateur>(this.apiUrl + '/api/users/' + id + '/');
   }
 
   addUser(data: any): Observable<any> {
     const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : '';
     let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
     let option = { headers: reqHeader }
-    return this.http.post<Utilisateur>(this.apiUrl + '/api/users', data, option)
+    return this.http.post<Utilisateur>(this.apiUrl + '/api/users/', data, option)
   }
 
   editUser(id: number, data: any) {
     const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : '';
     let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
     let option = { headers: reqHeader }
-    return this.http.put<Utilisateur>(this.apiUrl + '/api/users/' + id, data, option)
+    return this.http.put<Utilisateur>(this.apiUrl + '/api/users/' + id + '/', data, option)
   }
 
   deleteUser(id: number) {
     const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : '';
     let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
     let option = { headers: reqHeader }
-    return this.http.delete<Utilisateur>(this.apiUrl + '/api/users/' + id, option)
+    return this.http.delete<Utilisateur>(this.apiUrl + '/api/users/' + id + '/', option)
   }
 
   changeStatutUser(id: number, etat: any) {
     const token = isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : '';
     let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
     let option = { headers: reqHeader }
-    return this.http.put<Utilisateur>(this.apiUrl + '/api/user/enabled/' + id, { etat: etat }, option)
+    return this.http.put<Utilisateur>(this.apiUrl + '/api/user/enabled/' + id + '/', { etat: etat }, option)
   }
 }

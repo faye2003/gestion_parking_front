@@ -26,11 +26,11 @@ export class ParkingService {
         let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json'});
         let option = { headers: reqHeader, params: dataParams }
         console.log(this.apiUrl);
-        return this.http.get<any>(this.apiUrl + '/api/parking/search', option);
+        return this.http.get<any>(this.apiUrl + '/api/parking/', option);
     }
 
     getParkingsById(id: number): Observable<any> {
-        return this.http.get<any>(this.apiUrl + '/api/parking/' + id);
+        return this.http.get<any>(this.apiUrl + '/api/parking/' + id + '/');
     }
 
     createParking(parking: Parking): Observable<any> { // CREATE
@@ -39,12 +39,12 @@ export class ParkingService {
       
 
     updateParking(id: number, parking: Parking): Observable<any> { // UPDATE
-        return this.http.put<any>(this.apiUrl + '/api/parking/' + id, parking);
-      }
+        return this.http.put<any>(this.apiUrl + '/api/parking/' + id + '/', parking);
+    }
 
     deleteParking(id: number): Observable<any> { // DELETE
         // console.log(this.apiUrl);
-        return this.http.delete<any>(this.apiUrl + '/api/parking/' + id);
+        return this.http.delete<any>(this.apiUrl + '/api/parking/' + id + '/');
     }
       
     

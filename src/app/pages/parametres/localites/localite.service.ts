@@ -35,12 +35,12 @@ export class LocaliteService {
       
 
     updateLocalite(id: number, localite: Localite): Observable<any> { // UPDATE
-        return this.http.put<any>(this.apiUrl + '/api/localite/' + id, localite);
+        return this.http.put<any>(this.apiUrl + '/api/localite/' + id + '/', localite);
       }
 
     deleteLocalite(id: number): Observable<any> { // DELETE
         // console.log(this.apiUrl);
-        return this.http.delete<any>(this.apiUrl + '/api/localite/' + id);
+        return this.http.delete<any>(this.apiUrl + '/api/localite/' + id + '/');
     }
       
     

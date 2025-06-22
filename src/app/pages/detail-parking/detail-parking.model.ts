@@ -1,4 +1,4 @@
-export interface Parking {
+export interface DetailParking {
     id: number;
     libelle: string;
     description: string;
@@ -9,3 +9,4 @@ export interface Parking {
         libelle:string;
     };
 }
+

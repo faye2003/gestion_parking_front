@@ -9,13 +9,15 @@ import { LocaliteComponent } from './localites/list-localites/list-localite.comp
 import { TypeAccountComponent } from './type_accounts/list-type-account/list-type-account.component';
 import { AccountComponent } from './accounts/list-accounts/list-account.component';
 import { TypePaiementComponent } from './type_paiements/list-type-paiement/list-type-paiement.component';
+import { ProfilComponent } from './profil/list-profil/list-profil.component';
 
 @NgModule({
   declarations: [
     LocaliteComponent,
     TypeAccountComponent,
     AccountComponent,
-    TypePaiementComponent
+    TypePaiementComponent,
+    ProfilComponent
   ],
   imports: [
     CommonModule,

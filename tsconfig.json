@@ -21,6 +21,7 @@
       "DOM"
     ],
     "types": [
+      "google.maps",
       "@types/jest"
     ],
     "useDefineForClassFields": false

@@ -6,25 +6,34 @@ import Swal from 'sweetalert2';
 import { Parking } from "../../parkings/parking.model";
 import { DetailParking } from "../detail-parking.model";
 import { DetailParkingService } from "../detail-parking.service";
+import * as L from 'leaflet';
+
+interface MarkerProperties {
+  position: {
+    lat: number;
+    lng: number;
+  }
+};
 
 @Component({
-  selector: 'app-list-detail-campagne',
-  templateUrl: './list-detail-campagne.component.html',
-  styleUrls: ['./list-detail-campagne.component.scss']
+  selector: 'app-list-detail-parking',
+  templateUrl: './list-detail-parking.component.html',
+  styleUrls: ['./list-detail-parking.component.scss']
 })
 
 
 /**
  *  Dashboard Component
  */
-export class DetailCampagneComponent implements OnInit {
+export class DetailParkingComponent implements OnInit {
   searchTerm: any;
   totalItems: number = 0;
   page: number = 1;
   pageSize: number = 5;
   searchForm: FormGroup;
-  parking: any = null;
-  detail_parking!: number;
+  parking!: DetailParking;
+  detail_parking!: any;
+  map: any;
   ids!: number;
   editForm!: FormGroup;
   editFormValid!: FormGroup;
@@ -33,11 +42,12 @@ export class DetailCampagneComponent implements OnInit {
   actionModal = "";
   isSubmitted = false;
   submitted = false;
+  
 
   // bread crumb items
   breadCrumbItems!: Array<{}>;
 
-  detail_parkings: DetailParking[] = [];
+  detail_parkings: DetailParking | null = null;
   poche_selecteds!: number;
   currentDate!: any;
 
@@ -56,64 +66,99 @@ export class DetailCampagneComponent implements OnInit {
       quantite: [''],
       donneur_id: [''],
       groupe_sanguin_id: [''],
-      campagne_id: [''],
+      parking_id: [''],
     });
   }
 
   ngOnInit() {
     this.breadCrumbItems = [
       { label: 'Gestion' },
-      { label: 'Détail Campagne', active: true }
+      { label: 'Détail Parking', active: true }
     ];
-    this.loadDetailCampagnes();
-    this.loadProfils();
-    const id = this.route.snapshot.params['id'];
-    this.detailParkingService.getDetailParkingsById(id).subscribe((response: any) => {
-      this.parking = response.parkings[0];
-    });
+    this.loadDetailParkings();
   }
 
-  loadProfils() {
-    this.profilService.getProfils(this.page, 100, {}).subscribe(
-      (response: any) => {
-        if (response.status) {
-          this.profils = response.data;
-        } else {
-          this.errorMessage = response.message || 'Une erreur est survenu';
-        }
-      },
-    );
-  }
+  // loadProfils() {
+  //   this.profilService.getProfils(this.page, 100, {}).subscribe(
+  //     (response: any) => {
+  //       if (response.status) {
+  //         this.profils = response.data;
+  //       } else {
+  //         this.errorMessage = response.message || 'Une erreur est survenu';
+  //       }
+  //     },
+  //   );
+  // }
+  
 
-  loadDetailCampagnes() {
+  loadDetailParkings() {
     console.log(this.parking);
-    this.detail_parking = Number(this.route.snapshot.paramMap.get('id'));
+     const idParam = this.route.snapshot.paramMap.get('id');
+      this.detail_parking = idParam ? Number(idParam) : null;
+
+      if (!this.detail_parking) {
+        this.errorMessage = 'ID du parking non valide.';
+        return;
+      }
     this.detailParkingService.getDetailParkingsById(this.detail_parking).subscribe(
       (response: any) => {
-        if (response.status) {
-          this.detail_parkings = response.campagnes;
-          this.totalItems = response.meta ? response.meta.total : 0;
+        if (response) {
+          this.detail_parkings = response;
+          if (this.detail_parkings && this.detail_parkings.localite) {
+            const lat = this.detail_parkings.localite.latitude;
+            console.log(lat)
+            const lng = this.detail_parkings.localite.longitude;
+
+            if (lat && lng) {
+              this.initMap(lat, lng);
+            } else {
+              this.errorMessage = "Coordonnées non disponibles pour ce parking.";
+            }
+          }
+
         } else {
           this.errorMessage = response.message || 'Une erreur est survenue';
         }
       },
     );
   }
+
+  initMap(lat: number, lng: number) {
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) {
+      console.error("Le conteneur de la carte n'existe pas dans le DOM.");
+      return;
+    }
+
+    const map = L.map('map').setView([lat, lng], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([lat, lng]).addTo(map).bindPopup('Position du parking').openPopup();
+  }
+
+  mapOptions: google.maps.MapOptions = {
+    center: { lat: 48.8588548, lng: 2.347035 },
+    zoom: 13,
+  };
+
+  markers: MarkerProperties[] = [
+    { position: { lat: 48.8584, lng: 2.2945 } }, // Eiffel Tower
+    { position: { lat: 48.8606, lng: 2.3376 } }, // Louvre Museum
+    { position: { lat: 48.8530, lng: 2.3499 } }, // Cathédrale Notre-Dame de Paris
+  ];
+
   
   itemPagination(event: any) {
     this.pageSize = event.target.value;
-    // this.loadDetailCampagnes();
+    // this.loadDetailParkings();
   }
 
   openModal(modalname: any, item: any, action: any) {
     console.log(item);
     if (item !== null) {
-      this.poche_sang = item
       const formData: any = {
-        quantite: (this.poche_sang as any).quantite,
-        donneur_id: (this.poche_sang as any).donneur?.id,
-        groupe_sanguin_id: (this.poche_sang as any).groupe_sanguin?.id,
-        campagne_id: this.poche_sang.campagne?.id
       };
       this.editForm.patchValue(formData);
     } else {
@@ -140,46 +185,21 @@ export class DetailCampagneComponent implements OnInit {
     }
   }
 
-  mettreEnStock() {
-    const ids = this.campagne_poche_sangs.filter(p => p.selected && p.statut === 'Validée').map(p => p.id);
-    this.poche_selecteds = ids.length;
-    console.log(ids);
-    if (ids.length === 0) return;
-
-    this.transfertPocheService.transfertPoche(ids).subscribe(
-      (response: any) => {
-        if (response['status'] == "success") {
-          this.closeModal('ok');
-          Swal.fire({
-            icon: 'success',
-            title: 'Succès',
-            text: 'Les poches ont été mises en stock avec succès.',
-            confirmButtonText: 'OK'
-          }).then(() => {
-            // Recharge la page après que l'utilisateur ait cliqué sur "OK"
-            window.location.reload();
-          });
-        } else {
-          this.errorMessage = response['message'];
-          Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
-        }
-    });
-  }
   
-  deleteDonneur() {
-    this.donneurService.deleteDonneur(this.donneur.id).subscribe(
-      (response: any) => {
-        if (response['status'] == "success") {
-          this.closeModal('ok');
-          Swal.fire('Supprimé!', 'ce donneur a été supprimé.', 'success');
-          this.loadDonneurs();
-        } else {
-          this.errorMessage = response['message'];
-          Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
-        }
-      }
-    )
-  }
+  // deleteDonneur() {
+  //   this.donneurService.deleteDonneur(this.donneur.id).subscribe(
+  //     (response: any) => {
+  //       if (response['status'] == "success") {
+  //         this.closeModal('ok');
+  //         Swal.fire('Supprimé!', 'ce donneur a été supprimé.', 'success');
+  //         this.loadDonneurs();
+  //       } else {
+  //         this.errorMessage = response['message'];
+  //         Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
+  //       }
+  //     }
+  //   )
+  // }
 
   savePocheDeSang() {
     if (this.actionModal == "add") {
@@ -188,7 +208,7 @@ export class DetailCampagneComponent implements OnInit {
         this.isSubmitted = true;
         const formData = this.editForm.value;
         // console.log(formData.parent_id);
-        this.pocheDeSangService.createPocheSang(formData)
+        this.detailParkingService.createDetailParking(formData)
           .subscribe(
             (res: any) => {
               if (res['status'] !== "success") {
@@ -199,7 +219,7 @@ export class DetailCampagneComponent implements OnInit {
               else {
                 this.closeModal("add");
                 this.editForm.reset()
-                this.loadPocheSangs()
+                this.loadDetailParkings()
                 this.isSubmitted = false;
                 Swal.fire('Ajout réussi !', 'Poche de Sang a été ajouté.', 'success');
               }
@@ -213,25 +233,6 @@ export class DetailCampagneComponent implements OnInit {
         this.errorMessage = "Veuillez remplir le formulaire"
       }
     } else {
-      this.isSubmitted = true;
-      this.pocheDeSangService.updatePocheSang(this.poche_sang.id, this.editForm.value)
-        .subscribe(
-          (res: any) => {
-            if (res['status'] !== "success") {
-              this.errorMessage = res['message'];
-              this.isSubmitted = false;
-            } else {
-              this.closeModal("ok");
-              this.editForm.reset();
-              this.loadPocheSangs();
-              this.isSubmitted = false;
-                Swal.fire('Ajout réussi !', 'ce poche de sang a été mis à jour.', 'success');
-            }
-          }, _error => {
-            this.isSubmitted = false;
-            this.errorMessage = _error['message'];
-          }
-        );
     }
   }
 
@@ -239,17 +240,13 @@ export class DetailCampagneComponent implements OnInit {
     return this.editForm.controls
   }
 
-  get formDonneur() {
-    return this.editFormDonneur.controls
-  }
-
   action() {
-    if (this.actionModal == 'delete') {
-      this.deleteDonneur();
-    }
-    if (this.actionModal == 'stock') {
-      this.mettreEnStock();
-    }
+    // if (this.actionModal == 'delete') {
+    //   this.delete();
+    // }
+    // if (this.actionModal == 'stock') {
+    //   this.mettreEnStock();
+    // }
   }
 
 }

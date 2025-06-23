@@ -1,0 +1,245 @@
+<!-- start page title -->
+<app-pagetitle title="Places" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title mb-0">Liste des places</h4>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Rechercher..." formControlName="search" (input)="onSearch()">
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" formControlName="motif" (change)="onSearch()">
+              <option value="">Tous les motifs</option>
+              <option *ngFor="let statut of statuts" [value]="statut.value">{{ statut.libelle }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" formControlName="statut" (change)="onSearch()">
+              <option value="">Tous les statuts</option>
+              <option *ngFor="let statut of statuts" [value]="statut.value">{{ statut.libelle }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" formControlName="type_transfert_id" (change)="onSearch()">
+              <option value="">Tous les types de transfert</option>
+              <option *ngFor="let transfert of typesTransfert" [value]="transfert.id">{{ transfert.libelle }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-centered table-nowrap align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Heure Entrée</th>
+                <th>Heure Sortie</th>
+                <th>Statut</th>
+                <th>Parking</th>
+                <th>Véhicule</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of places">
+                <td>{{ item.heure_entree }}</td>
+                <td>{{ item.heure_sortie }}</td>
+                <td>{{ item.statut }}</td>
+                <td>{{ item.parking }}</td>
+                <td>{{ item.vehicule }}</td>
+                <td>
+                  <button class="btn btn-sm btn-primary me-1" (click)="openModal(confirmation, item, 'edit')">
+                    <i class="ri-edit-line"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="confirmDelete(item.id)">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="row mt-3">
+          <div class="col">
+            <ngb-pagination 
+              [collectionSize]="totalItems" 
+              [(page)]="page" 
+              [pageSize]="pageSize" 
+              [maxSize]="5"
+              [rotate]="true"
+              [ellipses]="true"
+              [boundaryLinks]="true">
+            </ngb-pagination>
+          </div>
+          <div class="col text-end">
+            <select class="form-select" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+              <option value="10">10 par page</option>
+              <option value="25">25 par page</option>
+              <option value="50">50 par page</option>
+              <option value="100">100 par page</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal d'édition -->
+<!-- <div #editModal class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">{{ actionModal === 'edit' ? 'Modifier' : 'Ajouter' }} poche de sang</h5>
+        <button type="button" class="btn-close" (click)="closeModal(editModal)" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editForm" (ngSubmit)="savePlace()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Donneur</label>
+                <select class="form-select" formControlName="donneur_id">
+                  <option value="">Sélectionner un donneur</option>
+                  <option *ngFor="let donneur of donneurs" [value]="donneur.id">
+                    {{ donneur.firstName }} {{ donneur.lastName }}
+                  </option>
+                </select>
+                <div *ngIf="editForm.get('donneur_id')?.invalid && (editForm.get('donneur_id')?.dirty || editForm.get('donneur_id')?.touched)" class="text-danger">
+                  Veuillez sélectionner un donneur
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Groupe sanguin</label>
+                <select class="form-select" formControlName="groupe_sanguin_id">
+                  <option value="">Sélectionner un groupe sanguin</option>
+                  <option *ngFor="let groupe of groupesSanguins" [value]="groupe.id">
+                    {{ groupe.nom }}
+                  </option>
+                </select>
+                <div *ngIf="editForm.get('groupe_sanguin_id')?.invalid && (editForm.get('groupe_sanguin_id')?.dirty || editForm.get('groupe_sanguin_id')?.touched)" class="text-danger">
+                  Veuillez sélectionner un groupe sanguin
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Campagne</label>
+                <select class="form-select" formControlName="campagne_id">
+                  <option value="">Sélectionner une campagne</option>
+                  <option *ngFor="let campagne of campagnes" [value]="campagne.id">
+                    {{ campagne.libelle }}
+                  </option>
+                </select>
+                <div *ngIf="editForm.get('campagne_id')?.invalid && (editForm.get('campagne_id')?.dirty || editForm.get('campagne_id')?.touched)" class="text-danger">
+                  Veuillez sélectionner une campagne
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Quantité</label>
+                <input type="number" class="form-control" formControlName="quantite" min="1">
+                <div *ngIf="editForm.get('quantite')?.invalid && (editForm.get('quantite')?.dirty || editForm.get('quantite')?.touched)" class="text-danger">
+                  <div *ngIf="editForm.get('quantite')?.errors?.['required']">
+                    La quantité est requise
+                  </div>
+                  <div *ngIf="editForm.get('quantite')?.errors?.['min']">
+                    La quantité doit être supérieure à 0
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Statut</label>
+                <select class="form-select" formControlName="statut">
+                  <option *ngFor="let statut of statuts" [value]="statut.value">
+                    {{ statut.libelle }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <label class="form-label">Motif</label>
+                <input type="text" class="form-control" formControlName="motif">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <label class="form-label">Date de transfert</label>
+                <input type="date" class="form-control" formControlName="date_transfert">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <label class="form-label">Type de transfert</label>
+                <select class="form-select" formControlName="type_transfert_id">
+                  <option value="">Sélectionner un type de transfert</option>
+                  <option *ngFor="let transfert of typesTransfert" [value]="transfert.id">
+                    {{ transfert.libelle }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <label class="form-label">Demande</label>
+                <select class="form-select" formControlName="demande_id">
+                  <option value="">Sélectionner une demande</option>
+                  <option *ngFor="let demande of demandes" [value]="demande.id">
+                    {{ demande.libelle }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid">
+                {{ actionModal === 'edit' ? 'Modifier' : 'Ajouter' }}
+              </button>
+              <button type="button" class="btn btn-secondary ms-2" (click)="closeModal(editModal)">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<!-- Modal de confirmation -->
+<ng-template #confirmation let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Confirmation</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <p>Êtes-vous sûr de vouloir supprimer cette poche de sang ?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cross click')">Annuler</button>
+    <button type="button" class="btn btn-danger" (click)="deletePlace()">Supprimer</button>
+  </div>
+</ng-template>
+<!-- end page title -->

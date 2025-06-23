@@ -22,12 +22,16 @@ import { PagesRoutingModule } from './pages-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ParkingComponent } from './parkings/list-parking/list-parking.component';
 import { VehiculeComponent } from './vehicules/list-vehicule/list-vehicule.component';
+import { DetailParkingComponent } from './detail-parking/list-detail-parking/list-detail-parking.component';
+import { PlaceComponent } from './places/list-place/list-place.component';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     ParkingComponent,
-    VehiculeComponent
+    VehiculeComponent,
+    DetailParkingComponent,
+    PlaceComponent
   ],
   imports: [
     CommonModule,

@@ -18,7 +18,7 @@ export class PlaceComponent implements OnInit {
   searchTerm: any;
   totalItems = 0;
   page = 1;
-  pageSize = 10;
+  pageSize = 5;
   selectedPocheId: number | null = null;
   private modalRef!: NgbModalRef;
   searchForm: FormGroup;

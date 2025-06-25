@@ -43,55 +43,10 @@
           </form><br>
         <!-- } -->
 
-        <div class="container mt-4" *ngIf="detail_parkings">
-          <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white">
-              <h5 class="mb-0">Détail du parking</h5>
-            </div>
-            <div class="card-body">
-              <p><strong>Nom :</strong> {{ detail_parkings.libelle }}</p>
-              <p><strong>Description :</strong> {{ detail_parkings.description }}</p>
-              <p><strong>Localité :</strong> {{ detail_parkings.localite?.libelle || 'Non définie' }}</p>
-              <p><strong>Statut :</strong> 
-                <span [ngClass]="detail_parkings.statut ? 'text-success' : 'text-danger'">
-                  {{ detail_parkings.statut ? 'Actif' : 'Inactif' }}
-                </span>
-              </p>
-              <p><strong>Total de places :</strong> {{ detail_parkings.total_places }}</p>
-            </div>
-          </div>
-        </div>
-
-
 <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
-<div class="row">
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title mb-3">Basic</h4>
-                <p class="card-title-dsec">Example of google maps.</p>
-                <!-- Map -->
-                <google-map [latitude]="latitude" [longitude]="longitude" [zoom]="15" width="100%" height="300px"></google-map>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title mb-3">Markers</h4>
-                <p class="card-title-dsec">Example of google maps.</p>
-                <google-map height="300px" width="100%" [options]="mapOptions">
-                    @for(marker of markers;track $index){
-                    <map-marker></map-marker>
-                    }
-                </google-map>
-            </div>
-        </div>
-    </div>
-    <!-- end col -->
-</div>
 
-<!-- <div class="row">
+
+<div class="row">
 
     <div class="col-xl-12">
         <div class="card p-3">
@@ -119,195 +74,58 @@
         </div>
     </div>
 
-</div> -->
+</div>
 <!-- end row -->
 
-<!-- <ng-template #TabContent>
+<ng-template #TabContent>
 <div class="row">
   <div class="col-12">
-    <div class="">
-      <div class="">
-        <div class="d-flex justify-content-end gap-1 mb-4">
-          <div class="mt-2">
-            <button (click)="openModal(confirmation, null, 'stock')"
-                    class="btn btn-primary">
-              <i class="fa fa-paper-plane"></i> Transfert
-            </button>&nbsp;
-            <button (click)="openModal(content, null, 'add')"  class="btn btn-success">
-              <i class="fa fa-plus"></i> Nouvelle Place</button>
-          </div>
-          <div class="">
-          </div>
-        </div>
-        <form class="needs-validation" novalidate>
-          <div class="row">
-            <div class="col-md-3 mb-3">
-              <label for="validationCustom01">Donneur</label>
-              <input type="text" class="form-control" id="validationCustom01" placeholder="Donneur">
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="validationCustom02">Groupe Sanguin</label>
-              <select class="form-select mr-sm-2" id="inlineFormCustomSelect">
-                <option selected>Choisir...</option>
-                  <option></option>
-              </select>
-            </div>
-            <div class="col-md-3 p-4 mt-1">
-              <button class="btn btn-primary" type="submit">Rechercher</button>
-            </div>
-          </div>
-        </form><br>
-
-        <div class="table-responsive">
-          <table class="table align-middle datatable dt-responsive table-check nowrap"
-            style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
-            <thead>
-              <tr class="bg-transparent">
-                <th>fd</th>
-                <th>Quantité</th>
-                <th>Donneur</th>
-                <th>Groupe Sanguin</th>
-                <th>Parking</th>
-                <th>Statut</th>
-                <th class="text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of places; track $index) {
-                <tr>
-                  <td>
-                    <input 
-                      type="checkbox"
-                      [disabled]="item.statut !== 'Validée'"
-                      [(ngModel)]="item.selected"
-                    />
-                  </td>
-                  <td class="text-body">
-                    {{ item.quantite }}
-                  </td>
-                  <td class="text-body">
-                    {{ item.donneur ? item.donneur.firstName : '' }}
-                  </td>
-                  <td class="text-body">
-                    {{ item.groupe_sanguin ? item.groupe_sanguin.nom : '' }}
-                  </td>
-                  <td class="text-body">
-                    {{ item.parking ? item.parking.description : '' }}
-                  </td>
-                  <td class="text-body">
-                    <span [ngClass]="getBadgeClass(item.statut)">{{ item.statut }}</span>
-                  </td>
-                  <td>
-                    <div class="text-center">
-                        <ng-container *ngIf="item.statut === 'Brouillon'; else statutBadge">
-                          <button (click)="openModal(confirmation, item, 'valid')" type="button" class="btn btn-outline-success">Valider</button>&nbsp;
-                        </ng-container>
-
-                        <ng-template #statutBadge>
-                          <span class="badge bg-light">Prêt Stockage</span>
-                        </ng-template>
-                        <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-success font-size-18"
-                          style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>                    
-                        <i (click)="openModal(confirmation, item, 'delete')"
-                          class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
-                          ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        <div class="d-flex justify-content-end gap-1 mb-4">
-          <div class="mt-2">
-            <button (click)="openModal(confirmation, parking, 'close')" class="btn btn-danger">
-              <i class="fa fa-window-close"></i> Clôturer la parking</button>
-          </div>
-          <div class="">
-          </div>
-        </div>
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title mb-0">Liste des places</h4>
       </div>
-    </div>
-  </div>
-</div>
-</ng-template> -->
-
-<!-- Tab Content -->
-<!-- <ng-template #TabContent1>
-<div class="row">
-  <div class="col-12">
-    <div class="">
-      <div class="">
-        <div class="d-flex justify-content-end gap-1 mb-4">
-          <div class="mt-2">
-            <button (click)="openModalDonneur(contentDonneur, null, 'add')"  class="btn btn-success">
-              <i class="fa fa-plus"></i> Nouveau donneur</button>
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div class="" [formGroup]="searchForm">
+            <label class="d-inline-flex align-items-center" for="">Recherche:</label>
+            <input type="text" formControlName="search" (input)="loadPlaces()" name="searchTerm" placeholder="Rechercher par libellé..."
+              class="form-control form-control-sm" aria-controls="tickets-table">
           </div>
-          <div class="">
+          <div class="d-flex justify-content-end gap-1 mb-4">
+            <div class="">
+              <button (click)="openModal(content, null, 'add')" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Nouvelle Place</button>
+            </div>
           </div>
         </div>
-        <form class="needs-validation" novalidate>
-          <div class="row">
-            <div class="col-md-3 mb-3">
-              <label for="validationCustom01">Donneur</label>
-              <input type="text" class="form-control" id="validationCustom01" placeholder="Donneur">
-            </div>
-            <div class="col-md-3 p-4 mt-1">
-              <button class="btn btn-primary" type="submit">Rechercher</button>
-            </div>
-          </div>
-        </form><br>
-
         <div class="table-responsive">
-          <table class="table align-middle datatable dt-responsive table-check nowrap"
-            style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
-            <thead>
-              <tr class="bg-transparent">
-                <th>Prénom Nom</th>
-                <th>Date de Naissance</th>
-                <th>Téléphone</th>
-                <th>Adresse</th>
-                <th>Groupe Sanguin</th>
-                <th>Email</th>
-                <th class="text-center">Action</th>
+          <table class="table table-centered table-nowrap align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Heure Entrée</th>
+                <th>Heure Sortie</th>
+                <th>Statut</th>
+                <th>Parking</th>
+                <th>Véhicule</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @for (item of parking_donneurs; track $index) {
-                <tr>
-                  <td class="text-body">
-                    {{ item.firstName + ' ' + item.lastName}}
-                  </td>
-                  <td class="text-body">
-                    {{ item.date_naissance | date :'MMM d, y' }}
-                  </td>
-                  <td class="text-body">
-                    {{ item.telephone }}
-                  </td>
-                  <td class="text-body">
-                    {{ item.adresse }}
-                  </td>
-                  <td class="text-body">
-                    {{ item.groupe_sanguin ? item.groupe_sanguin.nom : '' }}
-                  </td>
-                  <td class="text-body">
-                    {{ item.email }}
-                  </td>
-                  <td>
-                    <div class="text-center">
-                        <a [routerLink]="['/detail-donneur/', item.id]">
-                          <i class="bx bx-show me-1 text-success font-size-18"
-                          style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
-                        </a>
-                        <i (click)="openModalDonneur(contentDonneur, item, 'update')" class="bx bx-edit me-1 text-success font-size-18"
-                          style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>                    
-                        <i (click)="openModalDonneur(confirmationDonneur, item, 'delete')"
-                        class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
-                        ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
-                    </div>
-                  </td>
-                </tr>
-              }
+              <tr *ngFor="let item of places">
+                <td>{{ item.heure_entree }}</td>
+                <td>{{ item.heure_sortie }}</td>
+                <td>{{ item.statut }}</td>
+                <td>{{ item.parking }}</td>
+                <td>{{ item.vehicule }}</td>
+                <td>
+                  <button class="btn btn-sm btn-primary me-1" (click)="openModal(confirmation, item, 'edit')">
+                    <i class="ri-edit-line"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="openModal(confirmation, item, 'delete')">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -316,14 +134,14 @@
             <div class="dataTables_info mb-2" aria-live="polite">
               Affichage de {{(page - 1) * pageSize + 1}} à
               {{(page - 1) * pageSize + pageSize > totalItems ? totalItems : (page - 1) * pageSize + pageSize}} sur
-              {{totalItems}} Donneurs
+              {{totalItems}} Places
             </div>
           </div>
           <div class="col-sm-12 col-md-3">
             <div class="dataTables_length" id="tickets-table_length">
               <label class="d-inline-flex align-items-center">Afficher
                 <select name="tickets-table_length" aria-controls="tickets-table" name="pageSize" [(ngModel)]="pageSize"
-                (input)="itemPagination($event)" class="form-control form-control-sm mx-2"  class="form-control form-control-sm mx-2">
+                (input)="itemPagination($event)" class="form-control form-control-sm mx-2">
                   <option value="5">5</option>
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -336,7 +154,7 @@
           <div class="col-sm-12 col-md-6">
             <div class="text-md-right float-md-end pagination-rounded">
               <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="pageSize"
-                (pageChange)="loadDonneurs()">
+                (pageChange)="loadPlaces()">
               </ngb-pagination>
             </div>
           </div>
@@ -345,7 +163,31 @@
     </div>
   </div>
 </div>
-</ng-template> -->
+</ng-template>
+
+<!-- Tab Content -->
+<ng-template #TabContent1>
+  <div class="row">
+    <div class="container mt-4" *ngIf="detail_parkings">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Détail du parking</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Nom :</strong> {{ detail_parkings.libelle }}</p>
+          <p><strong>Description :</strong> {{ detail_parkings.description }}</p>
+          <p><strong>Localité :</strong> {{ detail_parkings.localite?.libelle || 'Non définie' }}</p>
+          <p><strong>Statut :</strong> 
+            <span [ngClass]="detail_parkings.statut ? 'text-success' : 'text-danger'">
+              {{ detail_parkings.statut ? 'Actif' : 'Inactif' }}
+            </span>
+          </p>
+          <p><strong>Total de places :</strong> {{ detail_parkings.total_places }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
         
   </div>
 </div>
@@ -353,44 +195,17 @@
 
 <ng-template #content role="document" let-modal>
   <div class="modal-header border-bottom-0">
-    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Une Poche de Sang</h5>
-    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Une Poche de Sang</h5>
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Une Place</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Une Place</h5>
     <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="savePocheDeSang()" [formGroup]="editForm">
+    <form (ngSubmit)="savePlace()" [formGroup]="editForm">
       <div class="row">
         <div class="col-6 mb-3">
-          <label class="control-label mb-0" for="">Quantité</label>
-          <input class="form-control" placeholder="Entrer la quantité" type="text" name="quantite" formControlName="quantite"
-            [ngClass]="{'is-invalid': submitted && form['quantite'].errors}" />
-          <div *ngIf="submitted && form['libelle'].errors">
-            <div class="text-danger" style="font-size: 12px;">La quantité est obligatoire
-            </div>
-          </div>
-        </div>
-        <div class="col-6 mb-3">
-          <label class="control-label mb-0" for="">Donneur</label>
-          <select class="form-select" type="text" name="donneur" formControlName="donneur_id" [ngClass]="{'is-invalid': submitted && form['donneur_id'].errors}" >
-            <!-- @for (item of donneurs; track $index) {
-            <option value={{item.id}}>{{item.firstName + ' ' + item.lastName}}</option>
-            } -->
-          </select>
-        </div>
-        <div class="col-6 mb-3">
-          <label class="control-label mb-0" for="">Groupe Sanguin</label>
-          <select class="form-select" type="text" name="groupe_sanguin_id" formControlName="groupe_sanguin_id" [ngClass]="{'is-invalid': submitted && form['groupe_sanguin_id'].errors}" >
-            <!-- @for (item of groupe_sanguins; track $index) {
-            <option value={{item.id}}>{{item.nom}}</option>
-            } -->
-          </select>
-        </div>
-        <div class="col-6 mb-3">
-          <label class="control-label mb-0">parking</label>
-          <select class="form-select" type="text" name="parking_id" formControlName="parking_id" [ngClass]="{'is-invalid': submitted && form['parking_id'].errors}" >
-            <!-- @for (item of detail_parkings; track $index) {
-            <option value={{item.id}}>{{item.description}}</option>
-            } -->
+          <label class="control-label mb-0" for="">Parking</label>
+          <select class="form-select" type="text" name="parking" formControlName="parking" [ngClass]="{'is-invalid': submitted && form['parking'].errors}" >
+            <option *ngIf="detail_parkings" value="{{detail_parkings.id}}">{{ detail_parkings.libelle }}</option>
           </select>
         </div>
       </div>
@@ -401,15 +216,16 @@
         <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas accéder à cette ressource,
           veuillez contacter votre administrateur</div>
       </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" [disabled]="isSubmitted">
-          <span *ngIf="!isSubmitted">Enregistrer</span>
-          <span *ngIf="isSubmitted" class="spinner-border spinner-border-sm"></span>
-        </button>
-        <button type="button" class="btn btn-light" (click)="modal.dismiss()">
-          Annuler
-        </button>
-      </div>
+      
+     <div class="modal-footer">
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitted">
+        <span *ngIf="!isSubmitted">Enregistrer</span>
+        <span *ngIf="isSubmitted" class="spinner-border spinner-border-sm"></span>
+      </button>
+      <button type="button" class="btn btn-danger" (click)="modal.dismiss()">
+        Annuler
+      </button>
+    </div>
     </form>
   </div>
 </ng-template>

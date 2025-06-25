@@ -6,15 +6,10 @@ import Swal from 'sweetalert2';
 import { Parking } from "../../parkings/parking.model";
 import { DetailParking } from "../detail-parking.model";
 import { DetailParkingService } from "../detail-parking.service";
+import { Place } from "../../places/place.model";
+import { PlaceService } from "../../places/place.service";
 import * as L from 'leaflet';
-
-interface MarkerProperties {
-  position: {
-    lat: number;
-    lng: number;
-  }
-};
-
+declare var google: any;
 @Component({
   selector: 'app-list-detail-parking',
   templateUrl: './list-detail-parking.component.html',
@@ -32,6 +27,7 @@ export class DetailParkingComponent implements OnInit {
   pageSize: number = 5;
   searchForm: FormGroup;
   parking!: DetailParking;
+  place!: Place;
   detail_parking!: any;
   map: any;
   ids!: number;
@@ -43,16 +39,19 @@ export class DetailParkingComponent implements OnInit {
   isSubmitted = false;
   submitted = false;
   
+  
 
   // bread crumb items
   breadCrumbItems!: Array<{}>;
 
   detail_parkings: DetailParking | null = null;
+  places: Place [] = [];
   poche_selecteds!: number;
   currentDate!: any;
 
   constructor(
     private readonly detailParkingService: DetailParkingService,
+    private readonly placeService: PlaceService,
     private route: ActivatedRoute, 
     private readonly fb: FormBuilder,
     private readonly modalService: NgbModal,
@@ -63,10 +62,11 @@ export class DetailParkingComponent implements OnInit {
     });
     this.editForm = this.fb.group({
       id: [''],
-      quantite: [''],
-      donneur_id: [''],
-      groupe_sanguin_id: [''],
-      parking_id: [''],
+      heure_entree: [0],
+      heure_sortie: [0],
+      parking: [''],
+      statut: [''],
+      vehicule: ['']
     });
   }
 
@@ -76,19 +76,37 @@ export class DetailParkingComponent implements OnInit {
       { label: 'Détail Parking', active: true }
     ];
     this.loadDetailParkings();
+    this.loadPlaces();
   }
 
-  // loadProfils() {
-  //   this.profilService.getProfils(this.page, 100, {}).subscribe(
-  //     (response: any) => {
-  //       if (response.status) {
-  //         this.profils = response.data;
-  //       } else {
-  //         this.errorMessage = response.message || 'Une erreur est survenu';
-  //       }
-  //     },
-  //   );
-  // }
+  loadPlaces() {
+    console.log('Loading poches de sang with params:', {
+      page: this.page,
+      pageSize: this.pageSize,
+      search: this.searchForm.value
+    });
+    
+    this.placeService.getPlaces(this.page, this.pageSize, this.searchForm.value).subscribe(
+      (response: any) => {
+        console.log('API Response:', response);
+        if (response && response.data) {
+          this.places = response.data.data || []
+          this.totalItems = response.meta?.count || 0
+        } else {
+          console.error('Invalid response format:', response);
+          this.errorMessage = 'Format de réponse invalide du serveur';
+        }
+      },
+      (error) => {
+        console.error('API Error:', error);
+        if (error.error && error.error.message) {
+          this.errorMessage = error.error.message;
+        } else {
+          this.errorMessage = 'Erreur lors du chargement des poches de sang';
+        }
+      }
+    );
+  }
   
 
   loadDetailParkings() {
@@ -123,31 +141,40 @@ export class DetailParkingComponent implements OnInit {
     );
   }
 
-  initMap(lat: number, lng: number) {
-    const mapContainer = document.getElementById('map');
-    if (!mapContainer) {
-      console.error("Le conteneur de la carte n'existe pas dans le DOM.");
+  initMap(lat: number, lng: number): void {
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+      console.error('Le conteneur de la carte est introuvable.');
       return;
     }
 
-    const map = L.map('map').setView([lat, lng], 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    const map = new google.maps.Map(mapElement, {
+      center: { lat: lat, lng: lng },
+      zoom: 15,
+    });
 
-    L.marker([lat, lng]).addTo(map).bindPopup('Position du parking').openPopup();
+    new google.maps.Marker({
+      position: { lat: lat, lng: lng },
+      map: map,
+      title: "Position du parking"
+    });
   }
 
-  mapOptions: google.maps.MapOptions = {
-    center: { lat: 48.8588548, lng: 2.347035 },
-    zoom: 13,
-  };
 
-  markers: MarkerProperties[] = [
-    { position: { lat: 48.8584, lng: 2.2945 } }, // Eiffel Tower
-    { position: { lat: 48.8606, lng: 2.3376 } }, // Louvre Museum
-    { position: { lat: 48.8530, lng: 2.3499 } }, // Cathédrale Notre-Dame de Paris
-  ];
+  // initMap(lat: number, lng: number) {
+  //   const mapContainer = document.getElementById('map');
+  //   if (!mapContainer) {
+  //     console.error("Le conteneur de la carte n'existe pas dans le DOM.");
+  //     return;
+  //   }
+
+  //   const map = L.map('map').setView([lat, lng], 15);
+  //   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  //     attribution: '&copy; OpenStreetMap contributors'
+  //   }).addTo(map);
+
+  //   L.marker([lat, lng]).addTo(map).bindPopup('Position du parking').openPopup();
+  // }
 
   
   itemPagination(event: any) {
@@ -201,40 +228,61 @@ export class DetailParkingComponent implements OnInit {
   //   )
   // }
 
-  savePocheDeSang() {
-    if (this.actionModal == "add") {
-      // console.log(this.editForm.valid);
-      if (this.editForm.valid) {
-        this.isSubmitted = true;
-        const formData = this.editForm.value;
-        // console.log(formData.parent_id);
-        this.detailParkingService.createDetailParking(formData)
-          .subscribe(
-            (res: any) => {
-              if (res['status'] !== "success") {
-                this.isSubmitted = false;
-                this.errorMessage = res['message'];
-                Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
-              }
-              else {
-                this.closeModal("add");
-                this.editForm.reset()
-                this.loadDetailParkings()
-                this.isSubmitted = false;
-                Swal.fire('Ajout réussi !', 'Poche de Sang a été ajouté.', 'success');
-              }
-            }, _error => {
-              this.isSubmitted = false;
-              this.errorMessage = _error['message'];
-            }
-          );
-      }
-      else {
-        this.errorMessage = "Veuillez remplir le formulaire"
-      }
+savePlace() {
+  if (this.actionModal == "add") {
+    if (this.editForm.valid) {
+    console.log('sfghhvnbvc')
+      this.isSubmitted = true;
+      const formData = this.editForm.value;
+      this.placeService.createPlace(formData)
+      .subscribe({
+        next: (response: any) => {
+          console.log('Réponse backend :', response);
+          if (!response?.status) {
+            this.isSubmitted = false;
+            this.errorMessage = response?.message || 'Une erreur est survenue.';
+            Swal.fire('Erreur!', this.errorMessage, 'error');
+          } else {
+            this.closeModal("add");
+            this.editForm.reset();
+            this.loadPlaces();
+            this.isSubmitted = false;
+            Swal.fire('Ajout réussi !', response.message || 'Ajout réussi.', 'success');
+          }
+        },
+        error: (_error) => {
+          this.isSubmitted = false;
+          this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
+          Swal.fire('Erreur!', this.errorMessage, 'error');
+        }
+      });
+
     } else {
+      this.errorMessage = "Veuillez remplir le formulaire";
     }
+  } else {
+    this.isSubmitted = true;
+    this.placeService.updatePlace(this.place.id, this.editForm.value)
+      .subscribe(
+        (response: any) => {
+          if (!response?.status) {
+            this.errorMessage = response?.message;
+            this.isSubmitted = false;
+          } else {
+            this.closeModal("ok");
+            this.editForm.reset();
+            this.loadPlaces();
+            this.isSubmitted = false;
+            Swal.fire('Mise à jour réussi !', response?.message || 'Mise à jour réussi.', 'success');
+          }
+        },
+        _error => {
+          this.isSubmitted = false;
+          this.errorMessage = _error?.message || 'Erreur réseau ou serveur';
+        }
+      );
   }
+}
 
   get form() {
     return this.editForm.controls

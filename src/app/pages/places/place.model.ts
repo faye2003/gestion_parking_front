@@ -3,8 +3,8 @@ export interface Place {
     heure_entree: Date;
     heure_sortie: Date;
     statut: string;
-    parking: string;
-    vehicule: string;
+    parking: number;
+    vehicule: number;
 }
 
 

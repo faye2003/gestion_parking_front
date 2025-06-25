@@ -29,7 +29,7 @@ export class PlaceService {
     }
 
     createPlace(place: Place): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/api/place`, place);
+        return this.http.post<any>(this.apiUrl + '/api/place/', place);
     }
 
     updatePlace(id: number, place: Place): Observable<any> {

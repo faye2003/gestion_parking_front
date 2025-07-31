@@ -13,10 +13,8 @@ export class LocaliteService {
 
     getLocalites(page: number, limit: number, data: any): Observable<any> {
         let dataParams = {
-            page: page, limit: limit,
-            libelle: data.libelle ?? '',
-            type_localite: data.type_localite ?? '',
-            parent_id: data.parent_id ?? '',
+            page: page,
+            limit: limit,
             search: data.search ?? ''
         }
         let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json'});

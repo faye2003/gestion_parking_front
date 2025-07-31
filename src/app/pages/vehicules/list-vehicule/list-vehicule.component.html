@@ -21,7 +21,7 @@
               <label for="validationCustom02">couleur</label>
               <select class="form-select" type="text" formControlName="couleur" name="couleur">
                 <option selected>Choisir...</option>
-                <option *ngFor="let item of localites" [value]="item.id">{{ item.libelle }}</option>
+                <!-- <option *ngFor="let item of localites" [value]="item.id">{{ item.libelle }}</option> -->
               </select>
             </div>
             <div class="col-md-3 mb-3">
@@ -65,9 +65,14 @@
                   <td>
                     <div class="text-center w-sm">
                       <a [routerLink]="['/detail-vehicule/', item.id]">
-                        <i class="bx bx-show me-1 text-success font-size-18"
+                        <i class="bx bx-show me-1 text-primary font-size-18"
                         style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
-                      </a>                   
+                      </a>
+                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
+                        style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
+                      <i (click)="openModal(confirmation, item, 'delete')"
+                        class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
+                        ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>                   
                     </div>
                   </td>
                 </tr>
@@ -110,6 +115,52 @@
   </div>
 </div>
 
+
+<ng-template #content role="document" let-modal>
+  <div class="modal-header border-bottom-0">
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Vehicule</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Vehicule</h5>
+    <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="saveVehicule()" [formGroup]="editForm">
+      <div class="row">
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Marque</label>
+          <input class="form-control" placeholder="Entrer le marque" type="text" name="marque" formControlName="marque"
+            [ngClass]="{'is-invalid': submitted && form['marque'].errors}" />
+          <div *ngIf="submitted && form['marque'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le marque est obligatoire
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-2" *ngIf="errorMessage">
+        <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+      </div>
+      <div *ngIf="errorMessage500" class="mb-2">
+        <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas accéder à cette ressource,
+          veuillez contacter votre administrateur</div>
+      </div>
+      <div class="row">
+        <div class="text-end col-md-6">
+          <button (click)="closeModal('Cross click')" type="reset" class="btn btn-danger" id="btn-save-event">
+            Annuler
+          </button>
+        </div>
+        <div class="text-start col-md-6">
+          <button onclick="refreshPage()" type="submit"
+            class="btn btn-primary button-envoyer px-1 rounded-2 d-flex justify-content-center">
+            <span *ngIf="!isSubmitted">Enregistrer</span>
+            <div *ngIf="isSubmitted && editForm.valid" class="spinner-border text-white m-1" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>
 
 <ng-template #confirmation role="document" let-modal>
   <div class="modal-header">

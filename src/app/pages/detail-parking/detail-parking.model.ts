@@ -1,3 +1,5 @@
+import { Place } from "../places/place.model";
+
 export interface DetailParking {
     id: number;
     libelle: string;
@@ -14,5 +16,6 @@ export interface DetailParking {
         latitude:number;
         longitude:number;
     };
+    places: Place[];
 }
 

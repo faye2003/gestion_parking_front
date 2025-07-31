@@ -13,20 +13,15 @@ export class VehiculeService {
 
     getVehicules(page: number, limit: number, data: any): Observable<any> {
         let dataParams = {
-            page: page, limit: limit,
-            libelle: data.libelle,
-            description: data.description ?? '',
-            statut: data.statut ?? '',
-            date_debut: data.date_debut ?? '',
-            date_fin: data.date_fin ?? '',
-            uo_vehicule: data.uo_vehicule ?? '',
-            localite: data.localite ?? ''
+            page: page,
+            limit: limit,
+            search: data.search ?? ''
         }
         console.log(data);
         let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json'});
         let option = { headers: reqHeader, params: dataParams }
         console.log(this.apiUrl);
-        return this.http.get<any>(this.apiUrl + '/api/vehicule/search', option);
+        return this.http.get<any>(this.apiUrl + '/api/vehicule/', option);
     }
 
     getVehiculesById(id: number): Observable<any> {

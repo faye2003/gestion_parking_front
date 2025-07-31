@@ -65,7 +65,6 @@ export class DetailParkingComponent implements OnInit {
       heure_entree: [0],
       heure_sortie: [0],
       parking: [''],
-      statut: [''],
       vehicule: ['']
     });
   }
@@ -90,8 +89,10 @@ export class DetailParkingComponent implements OnInit {
       (response: any) => {
         console.log('API Response:', response);
         if (response && response.data) {
-          this.places = response.data.data || []
-          this.totalItems = response.meta?.count || 0
+          this.places = this.detail_parkings?.places ?? [];
+          if (this.places) {
+            this.totalItems = response.meta?.count || 0
+          }
         } else {
           console.error('Invalid response format:', response);
           this.errorMessage = 'Format de réponse invalide du serveur';

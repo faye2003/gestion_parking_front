@@ -177,17 +177,17 @@
       }
     },
     "AUTHENTICATION": {
-      "TEXT": "Authentication",
-      "BADGE": "New",
+      "TEXT": "Authentification",
+      "BADGE": "Nouveau",
       "LIST": {
-        "LOGIN": "Login",
-        "REGISTER": "Register",
-        "RECOVERPWD": "Recover Password",
-        "LOCKSCREEN": "Lock screen",
-        "LOGOUT": "Log Out",
-        "CONFIRMMAIL": "Confirm Mail",
+        "LOGIN": "Se connecter",
+        "REGISTER": "S'inscrire",
+        "RECOVERPWD": "Récupérer le mot de passe",
+        "LOCKSCREEN": "Écran de verrouillage",
+        "LOGOUT": "Déconnexion",
+        "CONFIRMMAIL": "Confirmer le mail",
         "EMAILVERIFICATION": "Email Verification",
-        "TWOSTEPVERIFICATION": "Two Step Verification"
+        "TWOSTEPVERIFICATION": "Vérification en deux étapes"
       }
     },
     "PAGES": {

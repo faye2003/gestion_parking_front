@@ -13,14 +13,9 @@ export class ParkingService {
 
     getParkings(page: number, limit: number, data: any): Observable<any> {
         let dataParams = {
-            page: page, limit: limit,
-            libelle: data.libelle,
-            description: data.description ?? '',
-            statut: data.statut ?? '',
-            date_debut: data.date_debut ?? '',
-            date_fin: data.date_fin ?? '',
-            uo_parking: data.uo_parking ?? '',
-            localite: data.localite ?? ''
+            page: page,
+            limit: limit,
+            search: data.search ?? ''
         }
         console.log(data);
         let reqHeader = new HttpHeaders({ 'Content-Type': 'application/json'});

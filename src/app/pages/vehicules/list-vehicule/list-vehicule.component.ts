@@ -23,6 +23,7 @@ export class VehiculeComponent implements OnInit {
   page: number = 1;
   pageSize: number = 5;
   searchForm: FormGroup;
+  editForm: FormGroup;
   vehicule!: Vehicule;
   errorMessage = "";
   errorMessage500 = "";
@@ -45,15 +46,18 @@ export class VehiculeComponent implements OnInit {
   ) {
     this.searchForm = this.fb.group({
       id: [''],
-      description: [''],
-      type: [''],
-      statut: [''],
-      date_debut: [''],
-      date_fin: [''],
-      uo_vehicule: [''],
-      localite: [''],
+      marque: [''],
+      immatricule: [''],
+      couleur: [''],
+      parking: [''],
       search: ['']
     });
+    this.editForm = this.fb.group({
+      id: [''],
+      marque: [''],
+      immatricule: [''],
+      couleur: ['']
+    })
   }
 
   ngOnInit() {
@@ -63,8 +67,6 @@ export class VehiculeComponent implements OnInit {
     ];
     this.loadVehicules();
     this.loadLocalites();
- //   this.loadDonneurs();
-  //  this.loadPocheSangs();
   }
 
 
@@ -85,7 +87,7 @@ export class VehiculeComponent implements OnInit {
     this.vehiculeService.getVehicules(this.page, this.pageSize, this.searchForm.value).subscribe(
       (response: any) => {
         if (response.status) {
-          this.vehicules = response.data;
+          this.vehicules =  response.data.data || [];
           console.log(this.vehicules);
           this.totalItems = response.meta ? response.meta.total : 0;
         } else {
@@ -108,11 +110,80 @@ export class VehiculeComponent implements OnInit {
     this.loadVehicules();
   }
 
+  
+  openModal(modalname: any, item: any, action: any) {
+    if (item !== null) {
+      this.vehicule = item
+      this.editForm.patchValue(this.vehicule);
+    } else {
+      this.editForm.reset();
+    }
+    this.actionModal = action
+    this.modalService.open(modalname, { centered: true });
+  }
+
+
   closeModal(_modalname: any) {
     this.modalService.dismissAll();
     this.errorMessage = "";
     this.errorMessage500 = ""
   }
+
+  saveVehicule() {
+  if (this.actionModal == "add") {
+    if (this.editForm.valid) {
+      this.isSubmitted = true;
+      const formData = this.editForm.value;
+      this.vehiculeService.createVehicule(formData)
+      .subscribe({
+        next: (response: any) => {
+          console.log('Réponse backend :', response);
+          if (!response?.status) {
+            this.isSubmitted = false;
+            this.errorMessage = response?.message || 'Une erreur est survenue.';
+            Swal.fire('Erreur!', this.errorMessage, 'error');
+          } else {
+            this.closeModal("add");
+            this.editForm.reset();
+            this.loadVehicules();
+            this.isSubmitted = false;
+            Swal.fire('Ajout réussi !', response.message || 'Ajout réussi.', 'success');
+          }
+        },
+        error: (_error) => {
+          this.isSubmitted = false;
+          this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
+          Swal.fire('Erreur!', this.errorMessage, 'error');
+        }
+      });
+
+    } else {
+      this.errorMessage = "Veuillez remplir le formulaire";
+    }
+  } else {
+    this.isSubmitted = true;
+    this.vehiculeService.updateVehicule(this.vehicule.id, this.editForm.value)
+      .subscribe(
+        (response: any) => {
+          if (!response?.status) {
+            this.errorMessage = response?.message;
+            this.isSubmitted = false;
+          } else {
+            this.closeModal("ok");
+            this.editForm.reset();
+            this.loadVehicules();
+            this.isSubmitted = false;
+            Swal.fire('Mise à jour réussi !', response?.message || 'Mise à jour réussi.', 'success');
+          }
+        },
+        _error => {
+          this.isSubmitted = false;
+          this.errorMessage = _error?.message || 'Erreur réseau ou serveur';
+        }
+      );
+    }
+  }
+  
 
   deleteVehicule() {
     this.vehiculeService.deleteVehicule(this.vehicule.id).subscribe(
@@ -132,6 +203,11 @@ export class VehiculeComponent implements OnInit {
     if (this.actionModal == 'delete') {
       this.deleteVehicule();
     }
+  }
+
+  
+  get form() {
+    return this.editForm.controls
   }
 
 }

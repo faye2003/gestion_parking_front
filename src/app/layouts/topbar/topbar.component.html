@@ -29,7 +29,7 @@
             <!-- App Search-->
             <form class="app-search d-none d-lg-block">
                 <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="Search...">
+                    <input type="text" class="form-control" placeholder="Rechercher...">
                     <button class="btn btn-primary" type="button"><i class="bx bx-search-alt align-middle"></i></button>
                 </div>
             </form>
@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="dropdown d-none d-sm-inline-block" ngbDropdown>
+            <!-- <div class="dropdown d-none d-sm-inline-block" ngbDropdown>
                 <button type="button" class="btn header-item" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
                     @if(flagvalue === undefined){
                     <img src="{{valueset}}" alt="Header Language" height="16">}
@@ -70,7 +70,7 @@
                     </a>
                     }
                 </div>
-            </div>
+            </div> -->
 
             <div class="dropdown d-none d-sm-inline-block">
                 <button type="button" class="btn header-item" id="mode-setting-btn">
@@ -86,7 +86,7 @@
                 </button>
             </div>
 
-            <div class="dropdown d-none d-lg-inline-block ms-1" ngbDropdown>
+            <!-- <div class="dropdown d-none d-lg-inline-block ms-1" ngbDropdown>
                 <button type="button" class="btn header-item" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
                     <i-feather name="grid" class="icon-lg"></i-feather>
                 </button>
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="dropdown d-inline-block" ngbDropdown>
                 <button type="button" class="btn header-item noti-icon position-relative" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
@@ -234,22 +234,22 @@
                 </div>
             </div>
 
-            <div class="dropdown d-inline-block">
+            <!-- <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item right-bar-toggle me-2" (click)="toggleRightSidebar()">
                     <i-feather name="settings" class="icon-lg"></i-feather>
                 </button>
-            </div>
+            </div> -->
 
             <div class="dropdown d-inline-block" ngbDropdown>
                 <button type="button" class="btn header-item topbar-light bg-light-subtle border-start border-end" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
-                    <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg" alt="Header Avatar">
-                    <span class="d-none d-xl-inline-block ms-1 fw-medium">Shawn L.</span>
+                    <img class="rounded-circle header-profile-user" src="assets/images/users/grade1.jpeg" alt="Header Avatar">
+                    <span class="d-none d-xl-inline-block ms-1 fw-medium">MASTER</span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
                     <!-- item-->
                     <a class="dropdown-item" routerLink="/apps/profile"><i class="mdi mdi-face-man font-size-16 align-middle me-1"></i> Profile</a>
-                    <a class="dropdown-item" routerLink="/account/lock-screen"><i class="mdi mdi-lock font-size-16 align-middle me-1"></i> Lock screen</a>
+                    <a class="dropdown-item" routerLink="/account/lock-screen"><i class="mdi mdi-lock font-size-16 align-middle me-1"></i> Écran de verrouillage</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="javascript: void(0);" (click)="logout()"><i class="mdi mdi-logout text-muted font-size-16 align-middle me-1"></i> <span class="align-middle" key="t-logout">{{ 'MENUITEMS.AUTHENTICATION.LIST.LOGOUT' |
                             translate}}</span></a>

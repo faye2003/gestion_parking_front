@@ -81,10 +81,10 @@
                   <td>
                     <div class="text-center w-sm">
                       <a [routerLink]="['/detail-parking/', item.id]">
-                        <i class="bx bx-show me-1 text-success font-size-18"
+                        <i class="bx bx-show me-1 text-primary font-size-18"
                         style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
                       </a>
-                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-success font-size-18"
+                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
                         style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>                    
                       <i (click)="openModal(confirmation, item, 'delete')"
                         class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
@@ -161,7 +161,7 @@
         </div>
         <div class="col-6 mb-3">
           <label class="control-label mb-0">Localités</label>
-          <select class="form-select" type="text" name="localite" formControlName="localite" [ngClass]="{'is-invalid': submitted && form['localite'].errors}" >
+          <select class="form-select" type="text" name="localite_id" formControlName="localite_id" [ngClass]="{'is-invalid': submitted && form['localite_id'].errors}" >
             @for (item of localites; track $index) {
             <option value={{item.id}}>{{item.libelle}}</option>
             }

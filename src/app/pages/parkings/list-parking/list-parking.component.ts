@@ -46,13 +46,8 @@ export class ParkingComponent implements OnInit {
   ) {
     this.searchForm = this.fb.group({
       id: [''],
-      description: [''],
-      type: [''],
+      libelle: [''],
       statut: [''],
-      date_debut: [''],
-      date_fin: [''],
-      uo_parking: [''],
-      localite: [''],
       search: ['']
     });
     this.editForm = this.fb.group({
@@ -60,7 +55,7 @@ export class ParkingComponent implements OnInit {
       libelle: [''],
       description: [''],
       statut: [''],
-      localite: [''],
+      localite_id: [null, Validators.required],
     });
   }
 
@@ -101,14 +96,6 @@ export class ParkingComponent implements OnInit {
     );
   }
 
-  showTable: boolean = true;
-  public selectedProduct: any = null;
-
-  showListBanque():void {
-    this.showTable = true;
-    this.selectedProduct = null;
-  }
-
   itemPagination(event: any): void {
     this.pageSize = parseInt(event.target.value, 10);
     this.page = 1;  // ✅ remettre la pagination à la première page
@@ -124,7 +111,7 @@ export class ParkingComponent implements OnInit {
         libelle: this.parking.libelle,
         description: this.parking.description,
         statut: this.parking.statut,
-        localite: this.parking.localite
+        localite_id: this.parking.localite?.id,
       });
     } else {
       this.editForm.reset();

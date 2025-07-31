@@ -63,7 +63,7 @@
               <li [ngbNavItem]="2">
                   <a ngbNavLink>
                       <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
-                      <span class="d-none d-sm-block">Carte</span>
+                      <span class="d-none d-sm-block">Détail Parking</span>
                   </a>
                   <ng-template ngbNavContent>
                       <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
@@ -112,17 +112,17 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of places">
-                <td>{{ item.heure_entree }}</td>
-                <td>{{ item.heure_sortie }}</td>
+                <td>{{ item.heure_entree || 0 }}</td>
+                <td>{{ item.heure_sortie || 0 }}</td>
                 <td>{{ item.statut }}</td>
-                <td>{{ item.parking }}</td>
-                <td>{{ item.vehicule }}</td>
+                <td>{{ item.parking?.libelle }}</td>
+                <td>{{ item.vehicule || "Aucune"}}</td>
                 <td>
                   <button class="btn btn-sm btn-primary me-1" (click)="openModal(confirmation, item, 'edit')">
-                    <i class="ri-edit-line"></i>
+                    <i class="bx bxs-edit"></i>
                   </button>
                   <button class="btn btn-sm btn-danger" (click)="openModal(confirmation, item, 'delete')">
-                    <i class="ri-delete-bin-line"></i>
+                    <i class="bx bx-trash-alt"></i>
                   </button>
                 </td>
               </tr>

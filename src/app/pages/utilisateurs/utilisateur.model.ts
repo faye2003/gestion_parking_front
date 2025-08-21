@@ -1,3 +1,5 @@
+import { Profil } from "../parametres/profil/profil.model";
+
 export interface Utilisateur {
     id: number;
     prenom: string;
@@ -6,7 +8,12 @@ export interface Utilisateur {
     password?: string;
     telephone: string;
     adresse: string;
-    profil: number;
+    statut: string;
+    profil: {
+        id: number;
+        nom: string
+    };
+    profils: Profil[];
     localite_id: number; 
     localite: {
         id: number;

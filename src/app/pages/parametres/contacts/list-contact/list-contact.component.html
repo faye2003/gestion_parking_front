@@ -1,5 +1,5 @@
 <!-- start page title -->
-<app-pagetitle title="Profils" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<app-pagetitle title="Contacts" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
 
 <div class="row">
   <div class="col-12">
@@ -8,60 +8,42 @@
         <div class="d-flex justify-content-between">
           <div class="" [formGroup]="searchForm">
             <label class="d-inline-flex align-items-center" for="">Recherche:</label>
-            <input type="text" formControlName="search" (change)="loadProfils()" name="searchTerm"
+            <input type="text" formControlName="search" (input)="loadContacts()" name="searchTerm" placeholder="Numéro"
               class="form-control form-control-sm" aria-controls="tickets-table">
           </div>
           <div class="d-flex justify-content-end gap-1 mb-4">
             <div class="">
               <button (click)="openModal(content, null, 'add')" class="btn btn-primary">
-                <i class="fa fa-plus"></i> Profile</button>
+                <i class="fa fa-plus"></i> Contact</button>
             </div>
           </div>
         </div>
-        <!-- Spinner de chargement -->
-        <div *ngIf="isLoading" class="text-center p-5">
-          <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="visually-hidden">Chargement...</span>
-          </div>
-          <p class="mt-2 fs-5">Chargement des données en cours...</p>
-        </div>
-        
-        <div class="table-responsive" [class.d-none]="isLoading">
+        <div class="table-responsive">
           <table class="table align-middle datatable dt-responsive table-check nowrap"
             style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
             <thead>
               <tr class="bg-transparent">
-                <th>Nom</th>
+                <th>Numéro du Client</th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
-              @if (profils.length > 0) {
-                @for (item of profils; track $index) {
-                  <tr>
-                    <td class="text-body">
-                      <ngb-highlight [result]="item.libelle" [term]="searchTerm">
-                      </ngb-highlight>
-                    </td>
-                    <td>
-                      <div class="text-center">
-                        <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
-                          style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
-                        <i (click)="openModal(confirmation, item, 'delete')"
-                          class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
-                          ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
-                      </div>
-                      <div *ngIf="isSaving" class="spinner-border text-primary" style="width: 2rem; height: 2rem;" role="status">
-                        <span class="visually-hidden">Enregistrement...</span>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              } @else {
-                <tr>
-                  <td colspan="2" class="text-center">Aucune donnée disponible</td>
-                </tr>
-              }
+              @for (item of contacts; track $index) {
+              <tr>
+                <td class="text-body">
+                  <ngb-highlight [result]="item.numero_client" [term]="searchTerm">
+                  </ngb-highlight>
+                </td>
+                <td>
+                  <div class="text-center">
+                    <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
+                      style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
+                    <i (click)="openModal(confirmation, item, 'delete')"
+                      class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
+                      ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
+                  </div>
+                </td>
+              </tr>}
             </tbody>
           </table>
         </div>
@@ -70,7 +52,7 @@
             <div class="dataTables_info mb-2" aria-live="polite">
               Affichage de {{(page - 1) * pageSize + 1}} à
               {{(page - 1) * pageSize + pageSize > totalItems ? totalItems : (page - 1) * pageSize + pageSize}} sur
-              {{totalItems}} Profiles
+              {{totalItems}} Contacts
             </div>
           </div>
           <div class="col-sm-12 col-md-3">
@@ -90,7 +72,7 @@
           <div class="col-sm-12 col-md-6">
             <div class="text-md-right float-md-end pagination-rounded">
               <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="pageSize"
-                (pageChange)="loadProfils()">
+                (pageChange)="loadContacts()">
               </ngb-pagination>
             </div>
           </div>
@@ -102,18 +84,18 @@
 
 <ng-template #content role="document" let-modal>
   <div class="modal-header border-bottom-0">
-    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Profile</h5>
-    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Profile</h5>
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Contact</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Contact</h5>
     <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="saveProfil()" [formGroup]="editForm">
+    <form (ngSubmit)="saveContact()" [formGroup]="editForm">
       <div class="row">
         <div class="col-6 mb-3">
-          <label class="control-label mb-0" for="">Nom</label>
-          <input class="form-control" placeholder="Entrer le nom" type="text" name="nom" formControlName="nom"
-            [ngClass]="{'is-invalid': submitted && form['nom'].errors}" />
-          <div *ngIf="submitted && form['nom'].errors">
+          <label class="control-label mb-0" for="">Libellé</label>
+          <input class="form-control" placeholder="Entrer le libellé" type="text" name="libelle" formControlName="libelle"
+            [ngClass]="{'is-invalid': submitted && form['libelle'].errors}" />
+          <div *ngIf="submitted && form['libelle'].errors">
             <div class="text-danger" style="font-size: 12px;">Le libellé est obligatoire
             </div>
           </div>
@@ -128,7 +110,7 @@
       </div>
       <div class="row">
         <div class="text-end col-md-6">
-          <button (click)="closeModal('Cross click')" type="reset" class="btn btn-dark" id="btn-save-event">
+          <button (click)="closeModal('Cross click')" type="reset" class="btn btn-danger" id="btn-save-event">
             Annuler
           </button>
         </div>

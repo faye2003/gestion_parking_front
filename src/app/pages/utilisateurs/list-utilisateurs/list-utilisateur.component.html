@@ -9,7 +9,7 @@
         <div class="d-flex justify-content-between">
           <div class="" [formGroup]="searchForm">
             <label class="d-inline-flex align-items-center" for="">Recherche:</label>
-            <input type="text" formControlName="search" (change)="loadUsers()" name="searchTerm"
+            <input type="text" formControlName="search" (input)="loadUsers()" name="searchTerm"
               class="form-control form-control-sm" aria-controls="tickets-table">
           </div>
           <div class="d-flex justify-content-end gap-1 mb-4">
@@ -55,10 +55,10 @@
                   <ngb-highlight [result]="table.adresse" [term]="searchTerm"></ngb-highlight>
                 </td>
                 <td>
-                  {{table.profil}}
+                  {{ table.profils }}
                 </td>
                 <td>
-                  {{table.localite}}
+                  {{table.statut}}
                 </td>
                 <td>
                   <div class="text-center">

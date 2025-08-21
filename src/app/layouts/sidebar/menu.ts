@@ -33,7 +33,7 @@ export const MENU: MenuItem[] = [
     {
         id: 16,
         label: 'MENUITEMS.PARAMETRES.TEXT',
-        icon: 'users',
+        icon: 'settings',
         subItems: [
             {
                 id: 17,

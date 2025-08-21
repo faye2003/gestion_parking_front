@@ -10,6 +10,8 @@ import { TypeAccountComponent } from './type_accounts/list-type-account/list-typ
 import { AccountComponent } from './accounts/list-accounts/list-account.component';
 import { TypePaiementComponent } from './type_paiements/list-type-paiement/list-type-paiement.component';
 import { ProfilComponent } from './profil/list-profil/list-profil.component';
+import { PaiementComponent } from './paiements/list-paiement/list-paiement.component';
+import { ContactComponent } from './contacts/list-contact/list-contact.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { ProfilComponent } from './profil/list-profil/list-profil.component';
     TypeAccountComponent,
     AccountComponent,
     TypePaiementComponent,
-    ProfilComponent
+    ProfilComponent,
+    PaiementComponent,
+    ContactComponent
   ],
   imports: [
     CommonModule,

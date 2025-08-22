@@ -118,59 +118,60 @@ export class TypeAccountComponent implements OnInit {
   }
 
   saveTypeAccount() {
-  if (this.actionModal == "add") {
-    if (this.editForm.valid) {
-      this.isSubmitted = true;
-      const formData = this.editForm.value;
-      this.typeAccountService.createTypeAccount(formData)
-      .subscribe({
-        next: (response: any) => {
-          console.log('Réponse backend :', response);
-          if (!response?.status) {
+    if (this.actionModal == "add") {
+      if (this.editForm.valid) {
+        this.isSubmitted = true;
+        const formData = this.editForm.value;
+        this.typeAccountService.createTypeAccount(formData)
+        .subscribe({
+          next: (response: any) => {
+            console.log('Réponse backend :', response);
+            if (!response?.status) {
+              this.isSubmitted = false;
+              this.errorMessage = response?.message || 'Une erreur est survenue.';
+              Swal.fire('Erreur!', this.errorMessage, 'error');
+            } else {
+              this.closeModal("add");
+              this.editForm.reset();
+              this.loadTypeAccounts();
+              this.isSubmitted = false;
+              Swal.fire('Ajout réussi !', response.message || 'Ajout réussi.', 'success');
+            }
+          },
+          error: (_error) => {
             this.isSubmitted = false;
-            this.errorMessage = response?.message || 'Une erreur est survenue.';
+            this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
             Swal.fire('Erreur!', this.errorMessage, 'error');
-          } else {
-            this.closeModal("add");
-            this.editForm.reset();
-            this.loadTypeAccounts();
-            this.isSubmitted = false;
-            Swal.fire('Ajout réussi !', response.message || 'Ajout réussi.', 'success');
           }
-        },
+        });
+
+      } else {
+        this.errorMessage = "Veuillez remplir le formulaire";
+      }
+    } else {
+      this.isSubmitted = true;
+      this.typeAccountService.updateTypeAccount(this.type_account.id, this.editForm.value)
+        .subscribe({
+          next: (response: any) => {
+            if (!response?.status) {
+              this.errorMessage = response?.message;
+              this.isSubmitted = false;
+            } else {
+              this.closeModal("ok");
+              this.editForm.reset();
+              this.loadTypeAccounts();
+              this.isSubmitted = false;
+              Swal.fire('Mise à jour réussi !', response?.message || 'Mise à jour réussi.', 'success');
+            }
+          },
         error: (_error) => {
           this.isSubmitted = false;
           this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
           Swal.fire('Erreur!', this.errorMessage, 'error');
         }
       });
-
-    } else {
-      this.errorMessage = "Veuillez remplir le formulaire";
     }
-  } else {
-    this.isSubmitted = true;
-    this.typeAccountService.updateTypeAccount(this.type_account.id, this.editForm.value)
-      .subscribe(
-        (response: any) => {
-          if (!response?.status) {
-            this.errorMessage = response?.message;
-            this.isSubmitted = false;
-          } else {
-            this.closeModal("ok");
-            this.editForm.reset();
-            this.loadTypeAccounts();
-            this.isSubmitted = false;
-            Swal.fire('Mise à jour réussi !', response?.message || 'Mise à jour réussi.', 'success');
-          }
-        },
-        _error => {
-          this.isSubmitted = false;
-          this.errorMessage = _error?.message || 'Erreur réseau ou serveur';
-        }
-      );
   }
-}
 
 
   get form() {
@@ -182,22 +183,4 @@ export class TypeAccountComponent implements OnInit {
       this.deleteTypeAccount();
     } 
   }
-  
-  delTypeAccount(id: number):void {
-    this.typeAccountService.deleteTypeAccount(id).subscribe(
-        (response) => {
-          if (response.status) {
-            Swal.fire('Supprimé!', 'Le type account a été supprimé.', 'success');
-            this.ngOnInit();
-          } else {
-            Swal.fire('Erreur!', response.message || 'Une erreur est survenue.', 'error');
-          }
-        },
-        (error) => {
-          Swal.fire('Erreur!', 'Une erreur est survenue lors de la suppression.', 'error');
-        }
-      );
-  }
-
-
 }

@@ -25,7 +25,7 @@ export class VehiculeService {
     }
 
     getVehiculesById(id: number): Observable<any> {
-        return this.http.get<any>(this.apiUrl + '/api/vehicule/' + id);
+        return this.http.get<any>(this.apiUrl + '/api/vehicule/' + id + '/');
     }
 
     createVehicule(vehicule: Vehicule): Observable<any> { // CREATE
@@ -34,12 +34,12 @@ export class VehiculeService {
       
 
     updateVehicule(id: number, vehicule: Vehicule): Observable<any> { // UPDATE
-        return this.http.put<any>(this.apiUrl + '/api/vehicule/' + id, vehicule);
+        return this.http.put<any>(this.apiUrl + '/api/vehicule/' + id + '/', vehicule);
       }
 
     deleteVehicule(id: number): Observable<any> { // DELETE
         // console.log(this.apiUrl);
-        return this.http.delete<any>(this.apiUrl + '/api/vehicule/' + id);
+        return this.http.delete<any>(this.apiUrl + '/api/vehicule/' + id + '/');
     }
       
     

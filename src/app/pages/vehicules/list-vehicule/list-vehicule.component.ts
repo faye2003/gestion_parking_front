@@ -163,8 +163,8 @@ export class VehiculeComponent implements OnInit {
   } else {
     this.isSubmitted = true;
     this.vehiculeService.updateVehicule(this.vehicule.id, this.editForm.value)
-      .subscribe(
-        (response: any) => {
+      .subscribe({
+        next: (response: any) => {
           if (!response?.status) {
             this.errorMessage = response?.message;
             this.isSubmitted = false;
@@ -176,29 +176,34 @@ export class VehiculeComponent implements OnInit {
             Swal.fire('Mise à jour réussi !', response?.message || 'Mise à jour réussi.', 'success');
           }
         },
-        _error => {
+        error: (_error) => {
           this.isSubmitted = false;
-          this.errorMessage = _error?.message || 'Erreur réseau ou serveur';
+          this.errorMessage = _error?.error?.message || 'Erreur réseau ou serveur';
+          Swal.fire('Erreur!', this.errorMessage, 'error');
         }
-      );
+      });
     }
   }
   
+  isSuccessResponse(response: any): boolean {
+    return response && typeof response === 'object' && response.status === true;
+  }
 
   deleteVehicule() {
     this.vehiculeService.deleteVehicule(this.vehicule.id).subscribe(
       (response: any) => {
-        if (response['status'] == "success") {
+        if (this.isSuccessResponse(response)) {
           this.closeModal('ok');
-          Swal.fire('Supprimé!', 'cette banque de sanque a été supprimé.', 'success');
+          Swal.fire('Supprimé!', 'Ce Véhicule a été supprimé.', 'success');
           this.loadVehicules();
         } else {
-          this.errorMessage = response['message'];
+          this.errorMessage = response?.message;
           Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
         }
       }
-    )
+    );
   }
+
   action() {
     if (this.actionModal == 'delete') {
       this.deleteVehicule();

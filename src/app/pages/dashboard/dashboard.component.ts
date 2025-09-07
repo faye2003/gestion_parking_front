@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OwlOptions } from 'ngx-owl-carousel-o';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5map from "@amcharts/amcharts5/map";
@@ -7,6 +7,9 @@ import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
 
 import { walletOverview, investedOverview, marketOverview, walletlineChart, tradeslineChart, investedlineChart, profitlineChart, recentActivity, News, transactionsAll, transactionsBuy, transactionsSell } from './data';
 import { ChartType } from './dashboard.model';
+import { DashboardService } from './dashboard.service';
+import { Mouvement, DashboardSummary, Series } from './dashboard.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +19,7 @@ import { ChartType } from './dashboard.model';
 /**
  *  Dashboard Component
  */
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
   // bread crumb items
   breadCrumbItems!: Array<{}>;
@@ -50,8 +53,14 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  constructor() {
-  }
+  summary?: DashboardSummary;
+  mouvements: Mouvement[] = [];
+  occ?: Series;
+  rev?: Series;
+
+  private sub?: Subscription;
+
+  constructor(private svc: DashboardService) {}
 
   option = {
     startVal: this.num,
@@ -74,7 +83,30 @@ export class DashboardComponent implements OnInit {
      * Fetches the data
      */
     this.fetchData();
+    // this.refresh();
+    // temps réel: préfixe la table des mouvements
+    this.sub = this.svc.liveEvents()?.subscribe(ev => {
+      this.mouvements = [{...ev}, ...this.mouvements].slice(0, 10);
+      if (this.summary) {
+        this.summary.occupied = ev.action === 'ENTREE' ? this.summary.occupied + 1 : this.summary.occupied - 1;
+        this.summary.free = Math.max(this.summary.total_places - this.summary.occupied, 0);
+        this.summary.occupancy_rate = Math.round((this.summary.occupied / this.summary.total_places) * 100);
+      }
+    });
   }
+
+  // refresh() {
+  //   forkJoin({
+  //     summary: this.svc.summary(),
+  //     mouvements: this.svc.mouvements(10),
+  //     occ: this.svc.occupancy('day'),
+  //     rev: this.svc.revenues('month')
+  //   }).subscribe(({summary, mouvements, occ, rev}) => {
+  //     this.summary = summary; this.mouvements = mouvements; this.occ = occ; this.rev = rev;
+  //   });
+  // }
+
+  ngOnDestroy() { this.sub?.unsubscribe(); }
 
   /**
    * Fetches the data

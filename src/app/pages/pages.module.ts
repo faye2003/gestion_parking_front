@@ -24,6 +24,7 @@ import { ParkingComponent } from './parkings/list-parking/list-parking.component
 import { VehiculeComponent } from './vehicules/list-vehicule/list-vehicule.component';
 import { DetailParkingComponent } from './detail-parking/list-detail-parking/list-detail-parking.component';
 import { PlaceComponent } from './places/list-place/list-place.component';
+import { HistoriqueComponent } from './historiques/list-historique/list-historique.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { PlaceComponent } from './places/list-place/list-place.component';
     ParkingComponent,
     VehiculeComponent,
     DetailParkingComponent,
-    PlaceComponent
+    PlaceComponent,
+    HistoriqueComponent
   ],
   imports: [
     CommonModule,

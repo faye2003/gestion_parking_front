@@ -26,7 +26,7 @@
           </div>
           <div class="row">
             <div class="col-md-3 mb-3">
-              <label for="validationCustom02">Localité</label>
+              <label for="validationCustom02">Localisation</label>
               <select class="form-select" type="text" formControlName="localite" name="localite">
                 <option selected>Choisir...</option>
                 <option *ngFor="let item of localites" [value]="item.id">{{ item.libelle }}</option>
@@ -55,7 +55,7 @@
                 <th>Libellé</th>
                 <th>Description</th>
                 <th>Statut</th>
-                <th>Localité</th>
+                <th>Localisation</th>
                 <th>Nombre de Places</th>
                 <th class="text-center">Action</th>
               </tr>
@@ -160,7 +160,7 @@
           </div>
         </div>
         <div class="col-6 mb-3">
-          <label class="control-label mb-0">Localités</label>
+          <label class="control-label mb-0">Localisation</label>
           <select class="form-select" type="text" name="localite_id" formControlName="localite_id" [ngClass]="{'is-invalid': submitted && form['localite_id'].errors}" >
             @for (item of localites; track $index) {
             <option value={{item.id}}>{{item.libelle}}</option>

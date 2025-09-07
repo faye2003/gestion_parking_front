@@ -18,4 +18,24 @@ export interface ChartType {
     responsive?: any;
 }
 
+export interface DashboardSummary {
+  total_places: number;
+  occupied: number;
+  free: number;
+  occupancy_rate: number; // 0..100
+  cameras: { id:number; name:string; online:boolean }[];
+  revenues_today: number;
+}
+
+export interface Mouvement {
+  immatricule: string;
+  action: 'ENTREE' | 'SORTIE';
+  place: number;
+  parking: string;
+  at: string; // ISO
+}
+
+export interface Series { labels: string[]; values: number[]; }
+
+
 

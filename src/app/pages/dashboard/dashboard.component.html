@@ -9,9 +9,9 @@
         <div class="card-body">
             <div class="row align-items-center">
                 <div class="col-6">
-                    <span class="text-muted mb-3 lh-1 d-block text-truncate">Nombre Parkings</span>
+                    <span class="text-muted mb-3 lh-1 d-block">Nombre Parkings</span>
                     <h4 class="mb-3">
-                        <span [countUp]="13" [options]="option" class="counter-value"></span>
+                        <span [countUp]="13" class="counter-value"></span>
                     </h4>
                 </div>
 
@@ -20,12 +20,12 @@
                     </apx-chart>
                 </div> -->
             </div>
-            <div class="text-nowrap">
+            <!-- <div class="text-nowrap">
                 <span class="badge bg-success-subtle text-success">+$20.9k</span>
                 <span class="ms-1 text-muted font-size-13">Since last week</span>
-            </div>
+            </div> -->
         </div><!-- end card body -->
-    </div><!-- end card -->
+    </div><!-- end card --> 
     </div>
     
     <div class="col-xl-3 col-md-6">
@@ -35,19 +35,11 @@
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-6">
-                        <span class="text-muted mb-3 lh-1 d-block text-truncate">Number of Trades</span>
+                        <span class="text-muted mb-3 lh-1 d-block">Nombre de Places Occupées</span>
                         <h4 class="mb-3">
-                            <span [countUp]="6258" class="counter-value"></span>
+                            <span [countUp]="63" class="counter-value"></span>
                         </h4>
                     </div>
-                    <div class="col-6">
-                        <apx-chart class="apex-charts" dir="ltr" [series]="tradeslineChart.series" [chart]="tradeslineChart.chart" [colors]="tradeslineChart.colors" [stroke]="tradeslineChart.stroke" [tooltip]="tradeslineChart.tooltip">
-                        </apx-chart>
-                    </div>
-                </div>
-                <div class="text-nowrap">
-                    <span class="badge bg-danger-subtle text-danger">-29 Trades</span>
-                    <span class="ms-1 text-muted font-size-13">Since last week</span>
                 </div>
             </div><!-- end card body -->
         </div><!-- end card -->

@@ -23,6 +23,7 @@
             style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
             <thead>
               <tr class="bg-transparent">
+                <th>#</th>
                 <th>Libelle</th>
                 <th class="text-center">Action</th>
               </tr>
@@ -30,6 +31,9 @@
             <tbody>
               @for (item of type_paiements; track $index) {
               <tr>
+                <td class="text-body">
+                  {{ item.id }}
+                </td>
                 <td class="text-body">
                   <ngb-highlight [result]="item.libelle" [term]="searchTerm">
                   </ngb-highlight>

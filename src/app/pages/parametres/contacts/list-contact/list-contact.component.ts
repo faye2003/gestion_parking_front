@@ -50,7 +50,7 @@ export class ContactComponent implements OnInit {
   ngOnInit() {
     this.breadCrumbItems = [
       { label: 'Gestion' },
-      { label: 'Type Accounts', active: true }
+      { label: 'Contacts', active: true }
     ];
     this.loadContacts();
   }

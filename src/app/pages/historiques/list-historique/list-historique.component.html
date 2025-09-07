@@ -1,53 +1,84 @@
 <!-- start page title -->
-<app-pagetitle title="Type Accounts" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<app-pagetitle title="Historiques" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
 
 <div class="row">
   <div class="col-12">
     <div class="">
       <div class="">
-        <div class="d-flex justify-content-between">
-          <div class="" [formGroup]="searchForm">
-            <label class="d-inline-flex align-items-center" for="">Recherche:</label>
-            <input type="text" formControlName="search" (input)="loadTypeAccounts()" name="searchTerm" placeholder="Rechercher par libellé..."
-              class="form-control form-control-sm" aria-controls="tickets-table">
-          </div>
-          <div class="d-flex justify-content-end gap-1 mb-4">
-            <div class="">
-              <button (click)="openModal(content, null, 'add')" class="btn btn-primary">
-                <i class="fa fa-plus"></i> Type Account</button>
+        <form class="needs-validation" (ngSubmit)="loadHistoriques()" [formGroup]="searchForm" novalidate>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom01">Marque</label>
+              <input formControlName="marque" name="marque" type="text" class="form-control" placeholder="Marque">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="validationCustomUsername">Immatricule</label>
+              <input formControlName="immatricule" name="immatricule" type="text" class="form-control" placeholder="Description">
             </div>
           </div>
-        </div>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom02">couleur</label>
+              <select class="form-select" type="text" formControlName="couleur" name="couleur">
+                <option selected>Choisir...</option>
+                <!-- <option *ngFor="let item of localites" [value]="item.id">{{ item.libelle }}</option> -->
+              </select>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom05">Statut</label>
+              <select class="form-select" type="text" formControlName="statut" name="statut">
+                <option selected value="">Choisir...</option>
+                <option value="A_VENIR">A_VENIR</option>
+                <option value="OUVERTE">OUVERTE</option>
+                <option value="CLOTUREE">CLOTUREE</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary" type="submit">Rechercher</button>
+          </div>
+        </form><br>
+
         <div class="table-responsive">
           <table class="table align-middle datatable dt-responsive table-check nowrap"
             style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
             <thead>
               <tr class="bg-transparent">
                 <th>#</th>
-                <th>Libelle</th>
+                <th>Véhicule</th>
+                <th>Place</th>
+                <th>Date D'entrée</th>
+                <th>Date De sortie</th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
-              @for (item of type_accounts; track $index) {
-              <tr>
-                <td class="text-body">
-                  {{ item.id }}
-                </td>
-                <td class="text-body">
-                  <ngb-highlight [result]="item.libelle" [term]="searchTerm">
-                  </ngb-highlight>
-                </td>
-                <td>
-                  <div class="text-center">
-                    <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
-                      style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
-                    <i (click)="openModal(confirmation, item, 'delete')"
-                      class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
-                      ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
-                  </div>
-                </td>
-              </tr>}
+              @for (item of historiques; track $index) {
+                <tr>
+                  <td class="text-body">
+                    {{ item.marque }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.immatricule }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.couleur }}
+                  </td>
+                  <td>
+                    <div class="text-center w-sm">
+                      <a [routerLink]="['/detail-historique/', item.id]">
+                        <i class="bx bx-show me-1 text-primary font-size-18"
+                        style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
+                      </a>
+                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
+                        style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
+                      <i (click)="openModal(confirmation, item, 'delete')"
+                        class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
+                        ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>                   
+                    </div>
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
@@ -56,14 +87,14 @@
             <div class="dataTables_info mb-2" aria-live="polite">
               Affichage de {{(page - 1) * pageSize + 1}} à
               {{(page - 1) * pageSize + pageSize > totalItems ? totalItems : (page - 1) * pageSize + pageSize}} sur
-              {{totalItems}} Type accounts
+              {{totalItems}} Historiques
             </div>
           </div>
           <div class="col-sm-12 col-md-3">
             <div class="dataTables_length" id="tickets-table_length">
               <label class="d-inline-flex align-items-center">Afficher
                 <select name="tickets-table_length" aria-controls="tickets-table" name="pageSize" [(ngModel)]="pageSize"
-                (input)="itemPagination($event)" class="form-control form-control-sm mx-2">
+                (input)="itemPagination($event)" class="form-control form-control-sm mx-2"  class="form-control form-control-sm mx-2">
                   <option value="5">5</option>
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -76,7 +107,7 @@
           <div class="col-sm-12 col-md-6">
             <div class="text-md-right float-md-end pagination-rounded">
               <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="pageSize"
-                (pageChange)="loadTypeAccounts()">
+                (pageChange)="loadHistoriques()">
               </ngb-pagination>
             </div>
           </div>
@@ -86,21 +117,22 @@
   </div>
 </div>
 
+
 <ng-template #content role="document" let-modal>
   <div class="modal-header border-bottom-0">
-    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Type Account</h5>
-    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Type Account</h5>
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Historique</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Historique</h5>
     <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="saveTypeAccount()" [formGroup]="editForm">
+    <form (ngSubmit)="saveHistorique()" [formGroup]="editForm">
       <div class="row">
         <div class="col-6 mb-3">
-          <label class="control-label mb-0" for="">Libellé</label>
-          <input class="form-control" placeholder="Entrer le libellé" type="text" name="libelle" formControlName="libelle"
-            [ngClass]="{'is-invalid': submitted && form['libelle'].errors}" />
-          <div *ngIf="submitted && form['libelle'].errors">
-            <div class="text-danger" style="font-size: 12px;">Le libellé est obligatoire
+          <label class="control-label mb-0" for="">Marque</label>
+          <input class="form-control" placeholder="Entrer le marque" type="text" name="marque" formControlName="marque"
+            [ngClass]="{'is-invalid': submitted && form['marque'].errors}" />
+          <div *ngIf="submitted && form['marque'].errors">
+            <div class="text-danger" style="font-size: 12px;">Le marque est obligatoire
             </div>
           </div>
         </div>
@@ -132,7 +164,6 @@
   </div>
 </ng-template>
 
-
 <ng-template #confirmation role="document" let-modal>
   <div class="modal-header">
     <h5 class="modal-title mt-0">Confirmation</h5>
@@ -143,6 +174,9 @@
       <div class="col-12">
         <p>
           <span *ngIf="actionModal == 'delete'">Veuillez confirmer la suppression de: </span>
+          <span *ngIf="actionModal == 'activer'">Veuillez confirmer l'activation de: </span>
+          <span *ngIf="actionModal == 'desactiver'">Veuillez confirmer la désactivation de:
+          </span>
           <span class="text-sonatel fw-bold ml-2"></span>
         </p>
       </div>
@@ -168,5 +202,7 @@
     </div>
   </div>
 </ng-template>
+<!-- end page title -->
+
 
 <!-- end page title -->

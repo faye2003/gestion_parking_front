@@ -18,7 +18,7 @@
                 <input type="text" class="form-control" id="validationCustom02" placeholder="" value="{{ detail_parkings.description }}" readonly>
               </div>
               <div class="col-md-4 mb-3">
-                <label for="validationCustomUsername">Localité</label>
+                <label for="validationCustomUsername">Localisation</label>
                 <div class="input-group">
                   <input type="text" class="form-control" id="validationCustomUsername" placeholder=""  value="{{ detail_parkings.localite?.libelle || 'Non définie' }}" readonly>
                 </div>
@@ -176,7 +176,7 @@
         <div class="card-body">
           <p><strong>Nom :</strong> {{ detail_parkings.libelle }}</p>
           <p><strong>Description :</strong> {{ detail_parkings.description }}</p>
-          <p><strong>Localité :</strong> {{ detail_parkings.localite?.libelle || 'Non définie' }}</p>
+          <p><strong>Localisation :</strong> {{ detail_parkings.localite?.libelle || 'Non définie' }}</p>
           <p><strong>Statut :</strong> 
             <span [ngClass]="detail_parkings.statut ? 'text-success' : 'text-danger'">
               {{ detail_parkings.statut ? 'Actif' : 'Inactif' }}

@@ -6,6 +6,7 @@ import { VehiculeComponent } from './vehicules/list-vehicule/list-vehicule.compo
 import { ParkingComponent } from './parkings/list-parking/list-parking.component';
 import { DetailParkingComponent } from './detail-parking/list-detail-parking/list-detail-parking.component';
 import { PlaceComponent } from './places/list-place/list-place.component';
+import { HistoriqueComponent } from './historiques/list-historique/list-historique.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,10 @@ const routes: Routes = [
   {
     path: 'place',
     component: PlaceComponent
+  },
+  {
+    path: 'historique',
+    component: HistoriqueComponent
   },
   {
     // canActivate: [AuthGuard],

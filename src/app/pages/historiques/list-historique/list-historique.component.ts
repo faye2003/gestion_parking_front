@@ -66,22 +66,7 @@ export class HistoriqueComponent implements OnInit {
       { label: 'Historiques', active: true }
     ];
     this.loadHistoriques();
-    this.loadLocalites();
   }
-
-
-  loadLocalites() {
-    this.localiteService.getLocalites(this.page, 100, {}).subscribe(
-      (response: any) => {
-        if (response.status) {
-          this.localites = response.data;
-        } else {
-          this.errorMessage = response.message || 'Une erreur est survenu';
-        }
-      },
-    );
-  }
-
 
   loadHistoriques() {
     this.historiqueService.getHistoriques(this.page, this.pageSize, this.searchForm.value).subscribe(
@@ -89,7 +74,7 @@ export class HistoriqueComponent implements OnInit {
         if (response.status) {
           this.historiques =  response.data.data || [];
           console.log(this.historiques);
-          this.totalItems = response.meta ? response.meta.total : 0;
+          this.totalItems = response.meta?.count || 0;
         } else {
           this.errorMessage = response.message || 'Une erreur est survenue';
         }

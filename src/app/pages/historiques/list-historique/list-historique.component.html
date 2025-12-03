@@ -8,30 +8,22 @@
         <form class="needs-validation" (ngSubmit)="loadHistoriques()" [formGroup]="searchForm" novalidate>
           <div class="row">
             <div class="col-md-3 mb-3">
-              <label for="validationCustom01">Marque</label>
+              <label for="validationCustom01">Immatricule</label>
               <input formControlName="marque" name="marque" type="text" class="form-control" placeholder="Marque">
             </div>
             <div class="col-md-3 mb-3">
-              <label for="validationCustomUsername">Immatricule</label>
+              <label for="validationCustomUsername">Place</label>
               <input formControlName="immatricule" name="immatricule" type="text" class="form-control" placeholder="Description">
             </div>
           </div>
           <div class="row">
             <div class="col-md-3 mb-3">
-              <label for="validationCustom02">couleur</label>
-              <select class="form-select" type="text" formControlName="couleur" name="couleur">
-                <option selected>Choisir...</option>
-                <!-- <option *ngFor="let item of localites" [value]="item.id">{{ item.libelle }}</option> -->
-              </select>
+              <label for="validationCustom02">Date Entrée</label>
+              <input formControlName="date_entree" class="form-control" type="date" name="date_entree" id="date_sortie">
             </div>
             <div class="col-md-3 mb-3">
-              <label for="validationCustom05">Statut</label>
-              <select class="form-select" type="text" formControlName="statut" name="statut">
-                <option selected value="">Choisir...</option>
-                <option value="A_VENIR">A_VENIR</option>
-                <option value="OUVERTE">OUVERTE</option>
-                <option value="CLOTUREE">CLOTUREE</option>
-              </select>
+              <label for="validationCustom05">Date Sortie</label>
+              <input formControlName="date_sortie" class="form-control" type="date" name="date_sortie" id="date_sortie">
             </div>
           </div>
           <div class="form-group">
@@ -56,21 +48,23 @@
               @for (item of historiques; track $index) {
                 <tr>
                   <td class="text-body">
-                    {{ item.marque }}
+                    {{ item.id }}
                   </td>
                   <td class="text-body">
-                    {{ item.immatricule }}
+                    {{ item.vehicule?.immatricule }}
                   </td>
                   <td class="text-body">
-                    {{ item.couleur }}
+                    {{ item.place }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.date_entree }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.date_sortie }}
                   </td>
                   <td>
                     <div class="text-center w-sm">
-                      <a [routerLink]="['/detail-historique/', item.id]">
-                        <i class="bx bx-show me-1 text-primary font-size-18"
-                        style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
-                      </a>
-                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
+                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-warning font-size-18"
                         style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
                       <i (click)="openModal(confirmation, item, 'delete')"
                         class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"

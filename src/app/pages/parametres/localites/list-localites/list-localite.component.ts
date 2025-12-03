@@ -101,21 +101,51 @@ export class LocaliteComponent implements OnInit {
     return response && typeof response === 'object' && response.status === true;
   }
 
+  isFailResponse(response: any): boolean {
+    return response && typeof response === 'object' && response.status === false;
+  }
+
+
+  // deleteLocalite() {
+  //   this.localiteService.deleteLocalite(this.localite.id).subscribe(
+  //     (response: any) => {
+  //       if (!response?.status) {
+  //         this.errorMessage = response['message'];
+  //         Swal.fire('Erreur Suppression!', this.errorMessage, 'error');
+  //       }
+  //       if (this.isSuccessResponse(response)) {
+  //         this.closeModal('ok');
+  //         Swal.fire('Supprimé!', 'La localité a été supprimé.', 'success');
+  //         this.loadLocalites();
+  //       } else {
+  //         this.errorMessage = response['message'];
+  //         Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
+  //       }
+  //     }
+  //   )
+  // }
 
   deleteLocalite() {
-    this.localiteService.deleteLocalite(this.localite.id).subscribe(
-      (response: any) => {
-        if (this.isSuccessResponse(response)) {
+    this.localiteService.deleteLocalite(this.localite.id).subscribe({
+      next: (response: any) => {
+        if (response.status === true) {
+          // ✅ Suppression réussie
+          Swal.fire('Supprimé!', response.message || 'La localité a été supprimée.', 'success');
           this.closeModal('ok');
-          Swal.fire('Supprimé!', 'La localité a été supprimé.', 'success');
           this.loadLocalites();
         } else {
-          this.errorMessage = response['message'];
-          Swal.fire('Erreur!', this.errorMessage || 'Une erreur est survenue.', 'error');
+          // ⚠️ Suppression refusée (localité liée à un parking)
+          Swal.fire('Suppression impossible!', response.message || 'Cette localité est liée à un parking.', 'warning');
         }
+      },
+      error: (_error) => {
+        // 🚨 Erreur côté serveur (ex: 400, 404, 500)
+        const errorMsg = _error?.error?.message || 'Une erreur est survenue lors de la suppression.';
+        Swal.fire('Erreur!', errorMsg, 'error');
       }
-    )
+    });
   }
+
 
   saveLocalite() {
     if (this.actionModal == "add") {

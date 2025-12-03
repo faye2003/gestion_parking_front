@@ -1,16 +1,11 @@
 export interface Historique {
     id: number;
-    marque: string;
-    immatricule: string;
-    couleur: number;
-    parking_id: number;
-    user_id: number;
-    parking: {
-        id: number;
-        libelle: string
+    vehicule: {
+        immatricule: string,
+        couleur: string,
+        marque: string
     };
-    user: {
-        id: number;
-        nom: string
-    };
+    place: number;
+    date_entree: Date;
+    date_sortie: Date;
 }

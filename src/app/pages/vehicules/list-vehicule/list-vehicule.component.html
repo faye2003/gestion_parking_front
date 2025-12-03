@@ -65,10 +65,10 @@
                   <td>
                     <div class="text-center w-sm">
                       <a [routerLink]="['/detail-vehicule/', item.id]">
-                        <i class="bx bx-show me-1 text-primary font-size-18"
+                        <i class="bx bx-show me-1 text-info font-size-18"
                         style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
                       </a>
-                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
+                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-warning font-size-18"
                         style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
                       <i (click)="openModal(confirmation, item, 'delete')"
                         class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"

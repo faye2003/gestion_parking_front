@@ -11,7 +11,7 @@ export interface Utilisateur {
     statut: string;
     profil: {
         id: number;
-        nom: string
+        libelle: string
     };
     profils: Profil[];
     localite_id: number; 

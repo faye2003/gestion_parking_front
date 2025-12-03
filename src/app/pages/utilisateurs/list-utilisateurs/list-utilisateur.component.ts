@@ -68,7 +68,7 @@ export class ListUtilisateurComponent implements OnInit {
     this.userService.getUsers(this.page, this.pageSize, this.searchForm.value).subscribe((response: any) => {
       this.users = response.data.data;
       console.log(this.users);
-      this.totalItems = response.meta ? response.meta.total : 0;
+      this.totalItems = response.meta?.count || 0;
     });
   }
 

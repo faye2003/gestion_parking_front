@@ -55,14 +55,14 @@
                   <ngb-highlight [result]="table.adresse" [term]="searchTerm"></ngb-highlight>
                 </td>
                 <td>
-                  {{ table.profils }}
+                  {{ table.profil?.libelle }}
                 </td>
                 <td>
-                  {{table.statut}}
+                  Actif
                 </td>
                 <td>
                   <div class="text-center">
-                    <i (click)="openModal(content, table, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
+                    <i (click)="openModal(content, table, 'update')" class="bx bx-edit me-1 text-warning font-size-18"
                       style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>
                     <i (click)="openModal(confirmation, table, 'delete')"
                       class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
